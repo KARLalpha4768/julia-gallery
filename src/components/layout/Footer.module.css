@@ -1,0 +1,220 @@
+.footer {
+  background: var(--color-text-primary);
+  color: var(--color-text-inverse);
+  padding: var(--space-3xl) 0 var(--space-xl);
+  margin-top: var(--space-4xl);
+}
+
+.inner {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Brand */
+.brand {
+  margin-bottom: var(--space-3xl);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.logoMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-inverse);
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+}
+
+.logoText {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tagline {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 360px;
+}
+
+/* Links */
+.links {
+  display: flex;
+  gap: var(--space-3xl);
+  margin-bottom: var(--space-3xl);
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.linkGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.linkGroupTitle {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: var(--space-sm);
+}
+
+.linkGroup a {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.linkGroup a:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+/* Bottom */
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.bottomLinks {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.bottomLinks a {
+  color: rgba(255, 255, 255, 0.3);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.bottomLinks a:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Newsletter */
+.newsletter {
+  padding: var(--space-2xl) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: var(--space-2xl);
+}
+
+.newsletterTitle {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: var(--space-sm);
+}
+
+.newsletterText {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+}
+
+.subscribeForm {
+  display: flex;
+  gap: var(--space-sm);
+  max-width: 420px;
+  flex-wrap: wrap;
+}
+
+.subscribeInput {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  transition: border-color var(--duration-fast) var(--ease-out);
+  outline: none;
+}
+
+.subscribeInput::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.subscribeInput:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.subscribeBtn {
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
+}
+
+.subscribeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.subscribeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.subscribeSuccess {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.subscribeError {
+  font-size: 0.8125rem;
+  color: #f87171;
+  margin-top: var(--space-xs);
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .links {
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .bottom {
+    flex-direction: column;
+    gap: var(--space-md);
+    text-align: center;
+  }
+
+  .subscribeForm {
+    flex-direction: column;
+  }
+
+  .subscribeInput {
+    min-width: unset;
+    width: 100%;
+  }
+}
