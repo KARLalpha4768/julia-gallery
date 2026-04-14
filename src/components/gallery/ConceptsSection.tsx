@@ -25,6 +25,14 @@ const concepts = [
       "A meditative series drawn from the chromatic vocabulary of the Indo-Pacific waters. Deep ceruleans, volcanic indigos, and translucent aquamarines create an immersive experience of depth and light.",
     accent: "linear-gradient(135deg, #1e6091 0%, #2d8a8a 100%)",
   },
+  {
+    id: "cyclone-studies",
+    title: "Cyclone Studies",
+    count: 9,
+    description:
+      "The newest and most ambitious works in the collection. Nine large-scale canvases — including three diptychs — capturing the raw meteorological energy of the Mauritian storm season in heavy impasto and layered texture.",
+    accent: "linear-gradient(135deg, #1a6b8a 0%, #0d3b52 100%)",
+  },
 ];
 
 export function ConceptsSection() {
@@ -33,12 +41,13 @@ export function ConceptsSection() {
       <div className={styles.inner}>
         <span className={styles.label}>Series</span>
         <h2 className={styles.heading}>
-          Three Conceptual Threads
+          Four Conceptual Threads
         </h2>
         <p className={styles.description}>
-          The collection is organized into three interconnected series, each
+          The collection is organized into four interconnected series, each
           exploring a different dimension of the relationship between color,
-          place, and memory.
+          place, and memory — from intimate works on paper to large-scale
+          canvas.
         </p>
 
         <div className={styles.grid}>
