@@ -5,7 +5,7 @@ import styles from "./ArtistFilm.module.css";
 
 export function ArtistFilm() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
 
   function handleClick() {
     const v = videoRef.current;
@@ -28,7 +28,7 @@ export function ArtistFilm() {
             Painting the Indian Ocean
           </h2>
           <p className={styles.subheading}>
-            Inside the studio — the act of making, in Mauritian light.
+            On location — the act of making, in Mauritian light.
           </p>
         </div>
 
@@ -39,9 +39,9 @@ export function ArtistFilm() {
             src="/artist-film.mp4"
             playsInline
             loop
-            muted={false}
-            poster="/artwork/piece-new-18.jpeg"
-            onEnded={() => setPlaying(false)}
+            autoPlay
+            muted
+            poster="/artwork/piece-new-16.jpeg"
           />
           {!playing && (
             <div className={styles.playOverlay}>
@@ -59,7 +59,7 @@ export function ArtistFilm() {
           <p className={styles.captionText}>
             &ldquo;I don&rsquo;t illustrate the island. I let it paint through me.&rdquo;
           </p>
-          <span className={styles.captionMeta}>Studio, Mauritius · 2026</span>
+          <span className={styles.captionMeta}>Tamarin Bay, Mauritius · 2026</span>
         </div>
       </div>
     </section>
