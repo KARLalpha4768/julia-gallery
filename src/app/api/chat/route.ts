@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { ARTIST_SYSTEM_PROMPT } from "@/lib/artist-prompt";
+import { notifyArtist } from "@/lib/notify";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
@@ -22,6 +23,12 @@ export async function POST(request: NextRequest) {
         { error: "Invalid request body" },
         { status: 400 }
       );
+    }
+
+    // Notify Erze via SMS on the visitor's first message (fire-and-forget)
+    const userMessages = messages.filter((m: { role: string }) => m.role === "user");
+    if (userMessages.length === 1) {
+      notifyArtist(userMessages[0].content).catch(() => {});
     }
 
     // Limit conversation history to last 20 messages to control token usage
