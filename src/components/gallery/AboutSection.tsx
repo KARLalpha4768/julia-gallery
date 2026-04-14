@@ -20,7 +20,7 @@ export function AboutSection() {
               />
             </div>
             <div className={styles.floatingCard}>
-              <span className={styles.floatingNumber}>15</span>
+              <span className={styles.floatingNumber}>24</span>
               <span className={styles.floatingLabel}>Original works<br/>available</span>
             </div>
           </div>
@@ -57,11 +57,11 @@ export function AboutSection() {
             </div>
             <div className={styles.stats}>
               <div className={styles.stat}>
-                <span className={styles.statNumber}>3</span>
+                <span className={styles.statNumber}>4</span>
                 <span className={styles.statLabel}>Series</span>
               </div>
               <div className={styles.stat}>
-                <span className={styles.statNumber}>15</span>
+                <span className={styles.statNumber}>24</span>
                 <span className={styles.statLabel}>Artworks</span>
               </div>
               <div className={styles.stat}>

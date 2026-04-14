@@ -7,6 +7,7 @@ const concepts = [
     count: 5,
     description:
       "Explorations of color as geography — where hue becomes landscape and saturation defines altitude. Each work maps a territory that exists only in pigment.",
+    lineage: "Color Field · Lyrical Abstraction",
     accent: "linear-gradient(135deg, #2d8a4e 0%, #b8860b 100%)",
   },
   {
@@ -15,6 +16,7 @@ const concepts = [
     count: 4,
     description:
       "Investigations into edges, frontiers, and the liminal spaces where opposing forces meet. These works examine the tension between color fields — where they clash, merge, and negotiate.",
+    lineage: "Lyrical Abstraction · Abstract Expressionism",
     accent: "linear-gradient(135deg, #b8860b 0%, #c75b2f 100%)",
   },
   {
@@ -23,6 +25,7 @@ const concepts = [
     count: 5,
     description:
       "A meditative series drawn from the chromatic vocabulary of the Indo-Pacific waters. Deep ceruleans, volcanic indigos, and translucent aquamarines create an immersive experience of depth and light.",
+    lineage: "Color Field · Frankenthaler / Sam Francis lineage",
     accent: "linear-gradient(135deg, #1e6091 0%, #2d8a8a 100%)",
   },
   {
@@ -31,6 +34,7 @@ const concepts = [
     count: 9,
     description:
       "The newest and most ambitious works in the collection. Nine large-scale canvases — including three diptychs — capturing the raw meteorological energy of the Mauritian storm season in heavy impasto and layered texture.",
+    lineage: "Neo-Expressionist Impasto · The Sublime",
     accent: "linear-gradient(135deg, #1a6b8a 0%, #0d3b52 100%)",
   },
 ];
@@ -65,6 +69,7 @@ export function ConceptsSection() {
                   <span className={styles.cardCount}>{concept.count} works</span>
                 </div>
                 <p className={styles.cardDescription}>{concept.description}</p>
+                <span className={styles.lineageTag}>{concept.lineage}</span>
                 <span className={styles.exploreLink}>
                   Explore series
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -76,6 +81,28 @@ export function ConceptsSection() {
             </a>
           ))}
         </div>
+
+        {/* Art Historical Context */}
+        <div className={styles.tradition}>
+          <span className={styles.traditionLabel}>In the Tradition</span>
+          <blockquote className={styles.traditionQuote}>
+            &ldquo;Working in the lineage of Lyrical Abstraction &mdash; but from a vantage point
+            10,000 miles from the movement&rsquo;s New York and Paris origins &mdash; Julia brings
+            a new chromatography to one of contemporary painting&rsquo;s most enduring
+            conversations. Her works on paper recall the luminous transparency of Sam Francis;
+            her large-scale canvases carry the meteorological weight of Turner and the material
+            intensity of Kiefer. What anchors both is a single geography: the Indian Ocean,
+            as seen from Mauritius.&rdquo;
+          </blockquote>
+          <div className={styles.traditionComparators}>
+            <span>Sam Francis</span>
+            <span>Helen Frankenthaler</span>
+            <span>J.M.W. Turner</span>
+            <span>Anselm Kiefer</span>
+            <span>Jean-Paul Riopelle</span>
+          </div>
+        </div>
+
       </div>
     </section>
   );
