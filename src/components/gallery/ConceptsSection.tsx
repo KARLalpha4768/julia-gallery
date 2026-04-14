@@ -103,6 +103,36 @@ export function ConceptsSection() {
           </div>
         </div>
 
+        {/* What Makes It Original */}
+        <div className={styles.original}>
+          <span className={styles.traditionLabel}>What Makes This Work Singular</span>
+          <div className={styles.originalGrid}>
+            <div className={styles.originalItem}>
+              <h4 className={styles.originalTitle}>Geography</h4>
+              <p className={styles.originalText}>
+                No major figure in Lyrical Abstraction or Color Field ever claimed the Indian
+                Ocean as their visual territory. Frankenthaler was Connecticut; Sam Francis was
+                Pacific California; Rothko was New York. Julia paints in Mauritian light —
+                equatorial sun on volcanic soil, cyclone sky, coral lagoon — a palette and
+                meteorology that has never been central to this tradition.
+              </p>
+            </div>
+            <div className={styles.originalItem}>
+              <h4 className={styles.originalTitle}>Timing</h4>
+              <p className={styles.originalText}>
+                The Indian Ocean is emerging as one of the most important conceptual geographies
+                in contemporary art — shaped by climate urgency and the long-overdue recognition
+                of postcolonial plural identity. Julia arrives before that discourse is fully
+                codified in the Western art market.
+              </p>
+            </div>
+          </div>
+          <p className={styles.originalSignature}>
+            &ldquo;She is not painting <em>about</em> Mauritius.
+            She is painting <em>as</em> Mauritius.&rdquo;
+          </p>
+        </div>
+
       </div>
     </section>
   );
