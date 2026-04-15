@@ -1,7 +1,7 @@
 .ctas {
   display: flex;
   gap: var(--space-md);
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-md);
 }
 
 .primaryBtn {
@@ -35,15 +35,46 @@
   padding: 16px 24px;
   font-size: 0.875rem;
   font-weight: 600;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.secondaryBtn:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Utility row — View in Room + Inquire */
+.utilityRow {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.utilityBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   transition: all var(--duration-normal) var(--ease-out);
 }
 
-.secondaryBtn:hover {
+.utilityBtn:hover {
   border-color: var(--color-text-primary);
   color: var(--color-text-primary);
+}
+
+.utilityBtn svg {
+  flex-shrink: 0;
 }
 
 .inquiryWrapper {
@@ -73,5 +104,9 @@
   .primaryBtn,
   .secondaryBtn {
     text-align: center;
+  }
+
+  .utilityRow {
+    flex-direction: column;
   }
 }

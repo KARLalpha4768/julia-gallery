@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
+import { ImageZoom } from "./ImageZoom";
 import styles from "./ArtworkCarousel.module.css";
 
 interface ArtworkCarouselProps {
@@ -13,6 +14,7 @@ export function ArtworkCarousel({ images, title }: ArtworkCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<"next" | "prev">("next");
+  const [showZoom, setShowZoom] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const isSingle = images.length <= 1;
 
@@ -91,7 +93,8 @@ export function ArtworkCarousel({ images, title }: ArtworkCarouselProps) {
             quality={92}
             priority={activeIndex === 0}
             className={styles.image}
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", cursor: "zoom-in" }}
+            onClick={() => setShowZoom(true)}
           />
         </div>
 
@@ -163,6 +166,15 @@ export function ArtworkCarousel({ images, title }: ArtworkCarouselProps) {
             </button>
           ))}
         </div>
+      )}
+
+      {/* Zoom Lightbox */}
+      {showZoom && (
+        <ImageZoom
+          src={images[activeIndex]}
+          alt={`${title} — view ${activeIndex + 1}`}
+          onClose={() => setShowZoom(false)}
+        />
       )}
     </div>
   );
