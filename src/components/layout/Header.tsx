@@ -31,22 +31,22 @@ export function Header() {
         {/* Desktop Navigation */}
         <nav className={styles.nav} id="main-nav" aria-label="Main navigation">
           <a href="/#collection" className={styles.navLink}>
-            Collection
+            Works
           </a>
           <a href="/#concepts" className={styles.navLink}>
-            Concepts
+            Series
           </a>
           <a href="/#film" className={styles.navLink}>
-            Film
+            Atelier
           </a>
           <a href="/#about" className={styles.navLink}>
-            About
+            The Artist
           </a>
           <a href="/#novel" className={styles.navLink}>
-            Novel
+            Reading Room
           </a>
           <a href="/contact" className={styles.navLink}>
-            Contact
+            Inquire
           </a>
         </nav>
 
@@ -93,22 +93,22 @@ export function Header() {
       >
         <nav aria-label="Mobile navigation">
           <a href="/#collection" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            Collection
+            Works
           </a>
           <a href="/#concepts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            Concepts
+            Series
           </a>
           <a href="/#film" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            Film
+            Atelier
           </a>
           <a href="/#about" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            About
+            The Artist
           </a>
           <a href="/#novel" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            Novel
+            Reading Room
           </a>
           <a href="/contact" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            Contact
+            Inquire
           </a>
         </nav>
       </div>

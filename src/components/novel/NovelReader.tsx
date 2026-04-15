@@ -114,6 +114,7 @@ export function NovelReader() {
 
       const onWheel = (e: WheelEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         userScrolling.current = true;
         applyFn(offsetRef.current + e.deltaY);
         clearTimeout(timeout);
@@ -124,16 +125,20 @@ export function NovelReader() {
 
       let lastY = 0;
       const onTouchStart = (e: TouchEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         lastY = e.touches[0].clientY;
         userScrolling.current = true;
       };
       const onTouchMove = (e: TouchEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         const dy = lastY - e.touches[0].clientY;
         lastY = e.touches[0].clientY;
         applyFn(offsetRef.current + dy);
       };
-      const onTouchEnd = () => {
+      const onTouchEnd = (e: TouchEvent) => {
+        e.stopPropagation();
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           userScrolling.current = false;
@@ -141,7 +146,7 @@ export function NovelReader() {
       };
 
       paneEl.addEventListener("wheel", onWheel, { passive: false });
-      paneEl.addEventListener("touchstart", onTouchStart, { passive: true });
+      paneEl.addEventListener("touchstart", onTouchStart, { passive: false });
       paneEl.addEventListener("touchmove", onTouchMove, { passive: false });
       paneEl.addEventListener("touchend", onTouchEnd, { passive: true });
 
@@ -263,12 +268,21 @@ export function NovelReader() {
         </div>
       </section>
 
-      <ArtCollageBorder />
+      <div className={styles.splitBorder}>
+        <div className={styles.splitBorderHalf}>
+          <ArtCollageBorder />
+        </div>
+        <div className={styles.splitBorderGap} />
+        <div className={styles.splitBorderHalf}>
+          <ArtCollageBorder />
+        </div>
+      </div>
 
       {/* ── Dueling Scroll Panes ── */}
       <div className={styles.page} ref={containerRef}>
         {/* ── LEFT PANE: Novel ── */}
       <div className={styles.paneLeft} ref={left.paneRef}>
+        <div className={styles.paneHeader + ' ' + styles.paneHeaderLeft}>{NOVEL_TITLE}</div>
         <div className={styles.track} ref={left.trackRef} style={{ top: 0 }}>
           <h1 className={styles.novelTitle}>{NOVEL_TITLE}</h1>
           <p className={styles.novelSubtitle}>{NOVEL_SUBTITLE}</p>
@@ -298,6 +312,7 @@ export function NovelReader() {
 
       {/* ── RIGHT PANE: Criticism ── */}
       <div className={styles.paneRight} ref={right.paneRef}>
+        <div className={styles.paneHeader + ' ' + styles.paneHeaderRight}>{CRITICISM_TITLE}</div>
         <div className={styles.track} ref={right.trackRef} style={{ top: 0 }}>
           <h1 className={styles.criticismTitle}>{CRITICISM_TITLE}</h1>
           <p className={styles.criticismSubtitle}>{CRITICISM_SUBTITLE}</p>

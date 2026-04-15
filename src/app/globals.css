@@ -76,6 +76,7 @@ html {
   height: 100%;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
 }
 
 body {
@@ -90,6 +91,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 img {
