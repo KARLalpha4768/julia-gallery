@@ -84,6 +84,10 @@ export function NovelReader() {
   const right = useScrollPane();
 
   const speed = SPEEDS[speedIdx];
+  const playingRef = useRef(playing);
+  playingRef.current = playing;
+  const speedRef = useRef(speed);
+  speedRef.current = speed;
 
   // ── Jump to a specific chapter ──
   const jumpToChapter = useCallback(
@@ -104,9 +108,10 @@ export function NovelReader() {
   );
 
   // ── Auto-scroll tick — both panes scroll together ──
+  // Uses refs instead of state to avoid stale closures in rAF loop
   const tick = useCallback(() => {
-    const delta = BASE_SPEED * speed;
-    if (playing) {
+    const delta = BASE_SPEED * speedRef.current;
+    if (playingRef.current) {
       let leftDone = false;
       let rightDone = false;
       if (!userScrollingLeft.current) {
@@ -139,7 +144,7 @@ export function NovelReader() {
     setRightProgress(rightMax > 0 ? right.offsetRef.current / rightMax : 0);
 
     rafRef.current = requestAnimationFrame(tick);
-  }, [playing, speed, left, right]);
+  }, [left, right]);
 
   useEffect(() => {
     rafRef.current = requestAnimationFrame(tick);
