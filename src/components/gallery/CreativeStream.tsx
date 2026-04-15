@@ -92,6 +92,9 @@ export function CreativeStream() {
                     className={styles.img}
                     style={{ objectFit: "cover" }}
                   />
+                  {!artwork.available && (
+                    <div className={styles.soldBadge}>Sold</div>
+                  )}
                   <div className={styles.cardOverlay}>
                     <span className={styles.quickView}>
                       View Details
@@ -107,9 +110,13 @@ export function CreativeStream() {
                     <span>{artwork.dimensions}</span>
                   </div>
                   <div className={styles.cardFooter}>
-                    <span className={styles.price}>{artwork.priceFormatted}</span>
+                    {artwork.available ? (
+                      <span className={styles.price}>{artwork.priceFormatted}</span>
+                    ) : (
+                      <span className={styles.priceSold}>{artwork.priceFormatted}</span>
+                    )}
                     <span className={styles.inquireBtn}>
-                      View
+                      {artwork.available ? "View" : "View"}
                     </span>
                   </div>
                 </div>

@@ -7,6 +7,8 @@ import { CurrencyConverter } from "@/components/product/CurrencyConverter";
 import { ShippingCalculator } from "@/components/product/ShippingCalculator";
 import { ArtworkCarousel } from "@/components/product/ArtworkCarousel";
 import { SocialShare } from "@/components/product/SocialShare";
+import { FavoriteButton } from "@/components/product/FavoriteButton";
+import { RecordArtworkView } from "@/components/product/RecordArtworkView";
 import type { Metadata } from "next";
 import styles from "./page.module.css";
 
@@ -93,6 +95,9 @@ export default async function ArtworkPage({ params }: { params: Params }) {
         <span className={styles.breadcrumbCurrent}>{artwork.title}</span>
       </nav>
 
+      {/* Record this view */}
+      <RecordArtworkView artworkId={artwork.id} />
+
       {/* Main Content */}
       <div className={styles.layout}>
         {/* Image Column — Carousel */}
@@ -106,7 +111,10 @@ export default async function ArtworkPage({ params }: { params: Params }) {
         {/* Details Column */}
         <div className={styles.detailsCol}>
           <div className={styles.seriesBadge}>{artwork.series}</div>
-          <h1 className={styles.title}>{artwork.title}</h1>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>{artwork.title}</h1>
+            <FavoriteButton artworkId={artwork.id} />
+          </div>
 
           {artwork.locationUrl && (
             <a 

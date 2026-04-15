@@ -235,6 +235,32 @@
   color: #fff;
 }
 
+/* Sold Badge */
+.soldBadge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 4px 14px;
+  background: rgba(180, 40, 40, 0.9);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  z-index: 3;
+  backdrop-filter: blur(4px);
+}
+
+.priceSold {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  text-decoration: line-through;
+  text-decoration-color: rgba(180, 40, 40, 0.5);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .grid {

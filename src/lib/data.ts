@@ -1,4 +1,4 @@
-﻿export interface Artwork {
+export interface Artwork {
   id: number;
   slug: string;
   src: string;
@@ -57,7 +57,7 @@ export const artworks: Artwork[] = [
     provenance: "Direct from artist studio",
     materials: ["Golden Heavy Body Acrylics", "Arches 300gsm cold-press paper"],
     framed: false,
-    available: true,
+    available: false,
     locationName: "Pereybere",
     locationUrl: "https://www.google.com/maps/search/?api=1&query=Pereybere%20Mauritius",
   },
@@ -77,7 +77,7 @@ export const artworks: Artwork[] = [
     provenance: "Direct from artist studio",
     materials: ["Golden Heavy Body Acrylics", "Graphite", "Arches 300gsm cold-press paper"],
     framed: false,
-    available: true,
+    available: false,
     locationName: "Chamarel Geopark",
     locationUrl: "https://www.google.com/maps/search/?api=1&query=Chamarel%20Geopark%20Mauritius",
   },

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart-context";
+import { FavoritesProvider } from "@/lib/favorites-context";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { ArtistChat } from "@/components/chat/ArtistChat";
 import Script from "next/script";
@@ -54,7 +55,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <a href="#main-content" className="skip-to-content">
+          Skip to content
+        </a>
         <CartProvider>
+        <FavoritesProvider>
           <div id="google_translate_element" style={{ display: "none" }} aria-hidden="true"></div>
           <Script
             src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
@@ -96,6 +101,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <ArtistChat />
+        </FavoritesProvider>
         </CartProvider>
       </body>
     </html>
