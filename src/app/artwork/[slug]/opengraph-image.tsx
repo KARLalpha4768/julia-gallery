@@ -171,7 +171,7 @@ export default async function OGImage({
               marginTop: "auto",
             }}
           >
-            erze-art.vercel.app
+            Julia Art
           </div>
         </div>
       </div>

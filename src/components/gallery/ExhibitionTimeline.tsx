@@ -12,8 +12,8 @@ const exhibitions: Exhibition[] = [
   {
     year: "2025",
     title: "Chromatic Territories",
-    venue: "Julia Gallery Online",
-    location: "erze-art.vercel.app",
+    venue: "Online Gallery",
+    location: "Julia Art",
     type: "solo",
   },
   {
