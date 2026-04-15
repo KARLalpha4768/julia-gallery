@@ -206,8 +206,67 @@ export function NovelReader() {
   const cycleSpeed = () => setSpeedIdx((i) => (i + 1) % SPEEDS.length);
 
   return (
-    <div className={styles.page} ref={containerRef} id="novel">
-      {/* ── LEFT PANE: Novel ── */}
+    <div className={styles.wrapper} id="novel">
+      {/* ── Philosophical Introduction ── */}
+      <section className={styles.intro}>
+        <p className={styles.introKicker}>The Source & The Reflection</p>
+        <h2 className={styles.introTitle}>
+          Where the Painter&rsquo;s Eye Meets the Critic&rsquo;s Word
+        </h2>
+        <div className={styles.introFlourish} />
+        <p className={styles.introBody}>
+          Every painting begins twice: once in the act of seeing, and again in
+          the language that tries to hold what was seen. Julia Andrasy&rsquo;s
+          canvases are born from a journey — not merely across an ocean to
+          Mauritius, but inward, through the ancient dialogue between
+          <span className={styles.introBodyAccent}>
+            {" "}experience and understanding, colour and meaning, the hand that
+            paints and the mind that asks why.
+          </span>
+        </p>
+        <p className={styles.introBody}>
+          What follows is that dialogue made visible. On one side, the novel —
+          the raw encounter, the artist&rsquo;s eye absorbing a world of
+          seven-coloured earth, coral lagoons, cyclones, and sacred light. On
+          the other, the accumulated wisdom of those who have thought most
+          deeply about what it means to see, to create, and to render the
+          transient permanent: Walcott on the sea as history, Rilke on
+          attention as devotion, Ruskin on sight as prophecy, Gauguin on the
+          courage to stay.
+        </p>
+        <p className={styles.introBody}>
+          Together, these scrolls form the philosophical bedrock beneath every
+          brushstroke in the gallery above — the lived experience and the
+          learned tradition, moving in parallel, neither complete without the
+          other.
+        </p>
+        <div className={styles.introColumns}>
+          <div className={styles.introCol}>
+            <p className={styles.introColTitle}>← The Novel</p>
+            <p className={styles.introColText}>
+              Seven Coloured Earth — Julia&rsquo;s journey through Mauritius.
+              The raw material of vision: landscape, encounter, solitude, and
+              the stubborn act of making paint from earth and saffron when no
+              art shop exists. This is where the paintings are born.
+            </p>
+          </div>
+          <div className={styles.introCol}>
+            <p className={styles.introColTitle}>The Critique →</p>
+            <p className={styles.introColText}>
+              Voices from the traditions of literary criticism, art history,
+              and poetics — placing Julia&rsquo;s work alongside Monet&rsquo;s
+              haystacks, Baudelaire&rsquo;s voyages, and Walcott&rsquo;s
+              island memory. The frame through which the paintings speak.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <ArtCollageBorder />
+
+      {/* ── Dueling Scroll Panes ── */}
+      <div className={styles.page} ref={containerRef}>
+        {/* ── LEFT PANE: Novel ── */}
       <div className={styles.paneLeft} ref={left.paneRef}>
         <div className={styles.track} ref={left.trackRef} style={{ top: 0 }}>
           <h1 className={styles.novelTitle}>{NOVEL_TITLE}</h1>
@@ -283,6 +342,7 @@ export function NovelReader() {
           ⏱
         </button>
         <span className={styles.speedLabel}>{speed}×</span>
+      </div>
       </div>
     </div>
   );
