@@ -39,7 +39,7 @@ export function Header() {
           <a href="/#concepts" className={styles.navLink}>
             Concepts
           </a>
-          <a href="/novel" className={styles.navLink}>
+          <a href="/#novel" className={styles.navLink}>
             Novel
           </a>
           <a href="/contact" className={styles.navLink}>
@@ -98,7 +98,7 @@ export function Header() {
           <a href="/#concepts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
             Concepts
           </a>
-          <a href="/novel" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+          <a href="/#novel" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
             Novel
           </a>
           <a href="/contact" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>

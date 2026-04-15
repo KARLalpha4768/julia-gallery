@@ -63,11 +63,13 @@ function useScrollPane() {
 }
 
 export function NovelReader() {
-  const [playing, setPlaying] = useState(true); // auto-start
+  const [playing, setPlaying] = useState(false);
   const [speedIdx, setSpeedIdx] = useState(1);
+  const [visible, setVisible] = useState(false);
   const rafRef = useRef<number>(0);
   const userScrollingLeft = useRef(false);
   const userScrollingRight = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const left = useScrollPane();
   const right = useScrollPane();
@@ -172,6 +174,23 @@ export function NovelReader() {
     };
   }, [wirePane, left, right]);
 
+  // ── Start scrolling when section is visible ──
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !visible) {
+          setVisible(true);
+          setPlaying(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [visible]);
+
   // ── Keyboard ──
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -187,7 +206,7 @@ export function NovelReader() {
   const cycleSpeed = () => setSpeedIdx((i) => (i + 1) % SPEEDS.length);
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} ref={containerRef} id="novel">
       {/* ── LEFT PANE: Novel ── */}
       <div className={styles.paneLeft} ref={left.paneRef}>
         <div className={styles.track} ref={left.trackRef} style={{ top: 0 }}>

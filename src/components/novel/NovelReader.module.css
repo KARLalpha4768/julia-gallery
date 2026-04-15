@@ -1,6 +1,5 @@
 .page {
-  position: fixed;
-  inset: 0;
+  position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
@@ -256,7 +255,7 @@
 
 /* ── Controls Bar (centered at bottom) ── */
 .controls {
-  position: fixed;
+  position: absolute;
   bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
