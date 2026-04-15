@@ -28,6 +28,7 @@ const categoryLabels: Record<string, string> = {
   literary: "Literary Criticism",
   art: "Art Criticism",
   poetics: "Poetics",
+  philosophy: "Philosophy of Art",
 };
 
 /**
