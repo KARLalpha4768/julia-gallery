@@ -1,0 +1,153 @@
+.section {
+  padding: var(--space-section) var(--space-gutter);
+  background: var(--color-bg);
+}
+
+.inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-sm);
+}
+
+.heading {
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xl);
+}
+
+/* Timeline layout */
+.timeline {
+  position: relative;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 100px 24px 1fr;
+  gap: var(--space-md);
+  padding-bottom: var(--space-xl);
+  position: relative;
+}
+
+.entry:last-child {
+  padding-bottom: 0;
+}
+
+/* Year column */
+.yearCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding-top: 2px;
+}
+
+.year {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.solo {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--color-accent);
+}
+
+.group {
+  background: rgba(100, 149, 237, 0.15);
+  color: #6495ed;
+}
+
+.fair {
+  background: rgba(144, 238, 144, 0.15);
+  color: #3a9a3a;
+}
+
+/* Vertical line + dot */
+.line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.line::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.entry:last-child .line::before {
+  display: none;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  background: var(--color-bg);
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+/* Content column */
+.content {
+  padding-top: 0;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.venue {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.location {
+  font-size: 0.8rem;
+  color: var(--color-text-tertiary, #999);
+  margin: 2px 0 0 0;
+}
+
+@media (max-width: 640px) {
+  .entry {
+    grid-template-columns: 70px 20px 1fr;
+    gap: var(--space-sm);
+  }
+
+  .year {
+    font-size: 0.8rem;
+  }
+}

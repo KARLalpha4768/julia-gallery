@@ -6,8 +6,11 @@ import { ArtworkActions } from "@/components/product/ArtworkActions";
 import { CurrencyConverter } from "@/components/product/CurrencyConverter";
 import { ShippingCalculator } from "@/components/product/ShippingCalculator";
 import { ArtworkCarousel } from "@/components/product/ArtworkCarousel";
+import { SocialShare } from "@/components/product/SocialShare";
 import type { Metadata } from "next";
 import styles from "./page.module.css";
+
+const SITE_URL = "https://erze-art.vercel.app";
 
 type Params = Promise<{ slug: string }>;
 
@@ -41,8 +44,46 @@ export default async function ArtworkPage({ params }: { params: Params }) {
     .filter((a) => a.id !== artwork.id)
     .slice(0, 3);
 
+  /* JSON-LD Product structured data for Google rich results */
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: artwork.title,
+    description: artwork.description,
+    image: `${SITE_URL}${artwork.src}`,
+    url: `${SITE_URL}/artwork/${artwork.slug}`,
+    brand: {
+      "@type": "Brand",
+      name: "Julia Art",
+    },
+    creator: {
+      "@type": "Person",
+      name: "Julia Andrasy",
+    },
+    material: artwork.materials.join(", "),
+    artMedium: artwork.medium,
+    artworkSurface: artwork.materials[1] || "Archival paper",
+    dateCreated: String(artwork.year),
+    offers: {
+      "@type": "Offer",
+      price: artwork.price,
+      priceCurrency: "USD",
+      availability: artwork.available
+        ? "https://schema.org/InStock"
+        : "https://schema.org/SoldOut",
+      seller: {
+        "@type": "Organization",
+        name: "Julia Gallery",
+      },
+    },
+  };
+
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className={styles.breadcrumb} aria-label="Breadcrumb">
         <Link href="/">Home</Link>
@@ -157,6 +198,14 @@ export default async function ArtworkPage({ params }: { params: Params }) {
               14-day return guarantee
             </div>
           </div>
+
+          {/* Social Share */}
+          <SocialShare
+            url={`${SITE_URL}/artwork/${artwork.slug}`}
+            title={artwork.title}
+            image={`${SITE_URL}${artwork.src}`}
+            description={artwork.description}
+          />
         </div>
       </div>
 

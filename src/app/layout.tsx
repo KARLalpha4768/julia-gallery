@@ -24,6 +24,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://erze-art.vercel.app"),
   title: "Julia — Indo-Pacific Contemporary Art",
   description:
     "Discover original contemporary artworks from the Indo-Pacific region. Museum-grade paintings, curated collections, and exclusive artist editions.",
