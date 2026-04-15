@@ -1,12 +1,57 @@
-.container {
-  position: relative;
+.page {
+  position: fixed;
+  inset: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: #faf6f1;
-  color: #2c1810;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ── Hero Section ── */
+/* ── Viewport: the single pane ── */
+.viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Fade at top where text disappears */
+.viewport::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, #faf6f1 0%, transparent 100%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Fade at bottom where text appears */
+.viewport::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(0deg, #faf6f1 0%, transparent 100%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ── The scrolling text track ── */
+.track {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  will-change: top;
+}
+
+/* ── Hero (first screen) ── */
 .hero {
   display: flex;
   flex-direction: column;
@@ -15,7 +60,6 @@
   min-height: 100vh;
   padding: 4rem 2rem;
   text-align: center;
-  background: linear-gradient(180deg, #f5efe6 0%, #faf6f1 100%);
 }
 
 .heroTitle {
@@ -59,7 +103,7 @@
   font-size: 1.05rem;
   font-style: italic;
   color: #6b5444;
-  line-height: 1.8;
+  line-height: 1.6;
 }
 
 .flourish {
@@ -69,34 +113,7 @@
   background: linear-gradient(90deg, transparent, #c9b99a, transparent);
 }
 
-.scrollHint {
-  margin-top: 3rem;
-  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #8b7355;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-/* ── Reader Scroll Area ── */
-.reader {
-  position: relative;
-  max-width: 60%;
-  margin: 0 auto;
-  padding: 4rem 2rem 12rem;
-}
-
 /* ── Chapter ── */
-.chapter {
-  margin-bottom: 6rem;
-}
-
 .chapterTitle {
   font-family: var(--font-cormorant), "Cormorant Garamond", serif;
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
@@ -106,7 +123,7 @@
   text-align: center;
   color: #2c1810;
   margin: 0 0 1rem;
-  padding-top: 4rem;
+  padding-top: 6rem;
 }
 
 .chapterDivider {
@@ -126,9 +143,14 @@
   hyphens: auto;
 }
 
+/* Spacer at end so last text can scroll fully through */
+.endSpacer {
+  height: 100vh;
+}
+
 /* ── Controls Bar ── */
 .controls {
-  position: fixed;
+  position: absolute;
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
@@ -143,7 +165,6 @@
   border-radius: 999px;
   box-shadow: 0 4px 24px rgba(44, 24, 16, 0.08);
   z-index: 100;
-  transition: opacity 0.3s ease;
 }
 
 .controlBtn {
@@ -193,9 +214,9 @@
   background: rgba(201, 185, 154, 0.4);
 }
 
-/* ── Progress Rail ── */
+/* ── Chapter Progress ── */
 .progressRail {
-  position: fixed;
+  position: absolute;
   right: 1.5rem;
   top: 50%;
   transform: translateY(-50%);
@@ -226,27 +247,36 @@
   transform: scale(1.2);
 }
 
-.progressLabel {
+/* ── Scrollbar inside viewport ── */
+.scrollbar {
   position: absolute;
-  right: 1.5rem;
-  white-space: nowrap;
-  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
-  font-size: 0.75rem;
-  color: #8b7355;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
+  right: 0.5rem;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: rgba(201, 185, 154, 0.15);
+  border-radius: 2px;
+  z-index: 10;
 }
 
-.progressDot:hover + .progressLabel,
-.progressDot:hover .progressLabel {
-  opacity: 1;
+.scrollThumb {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: rgba(201, 185, 154, 0.5);
+  border-radius: 2px;
+  min-height: 30px;
+  transition: background 0.2s;
 }
 
-/* ── Link to Criticism ── */
+.scrollThumb:hover {
+  background: rgba(201, 185, 154, 0.8);
+}
+
+/* ── Link Section ── */
 .linkSection {
   text-align: center;
-  padding: 4rem 2rem 6rem;
+  padding: 4rem 2rem 2rem;
 }
 
 .linkBtn {
@@ -270,8 +300,8 @@
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  .reader {
-    padding: 3rem 1.25rem 10rem;
+  .track {
+    width: 85%;
   }
 
   .controls {
@@ -282,14 +312,5 @@
 
   .progressRail {
     display: none;
-  }
-
-  .hero {
-    padding: 3rem 1.5rem;
-  }
-
-  .epigraph {
-    padding: 1.5rem;
-    font-size: 0.95rem;
   }
 }

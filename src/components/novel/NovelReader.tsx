@@ -12,109 +12,144 @@ import { ArtCollageBorder } from "./ArtCollageBorder";
 import styles from "./NovelReader.module.css";
 
 const SPEEDS = [0.5, 1, 1.5, 2] as const;
-/** Pixels per frame at 60fps, speed 1x → ~50 words/minute reading pace */
+/** Pixels per frame at 60fps. 1x ≈ 50 wpm reading pace */
 const BASE_SPEED = 0.55;
-/** Milliseconds of idle scroll before auto-scroll resumes */
 const RESUME_DELAY = 3000;
 
 export function NovelReader() {
   const [playing, setPlaying] = useState(false);
-  const [speedIdx, setSpeedIdx] = useState(1); // default 1x
+  const [speedIdx, setSpeedIdx] = useState(1);
   const [activeChapter, setActiveChapter] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
   const rafRef = useRef<number>(0);
-  const lastScrollTime = useRef(0);
   const userScrolling = useRef(false);
-  const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const chapterOffsets = useRef<number[]>([]);
 
   const speed = SPEEDS[speedIdx];
 
-  // ── Auto-scroll loop ──
+  // ── Measure chapter positions once track is rendered ──
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const chapters = trackRef.current.querySelectorAll("[data-chapter]");
+    chapterOffsets.current = Array.from(chapters).map(
+      (el) => (el as HTMLElement).offsetTop
+    );
+  }, []);
+
+  // ── Get max scroll distance ──
+  const getMaxOffset = useCallback(() => {
+    if (!trackRef.current || !viewportRef.current) return 0;
+    return Math.max(
+      0,
+      trackRef.current.scrollHeight - viewportRef.current.clientHeight
+    );
+  }, []);
+
+  // ── Apply offset to track position ──
+  const applyOffset = useCallback(
+    (newOffset: number) => {
+      const max = getMaxOffset();
+      const clamped = Math.max(0, Math.min(newOffset, max));
+      offsetRef.current = clamped;
+
+      if (trackRef.current) {
+        trackRef.current.style.top = `-${clamped}px`;
+      }
+
+      // Update progress
+      if (max > 0) {
+        setScrollProgress(clamped / max);
+      }
+
+      // Update active chapter
+      const offsets = chapterOffsets.current;
+      for (let i = offsets.length - 1; i >= 0; i--) {
+        if (clamped >= offsets[i] - 200) {
+          setActiveChapter(i);
+          break;
+        }
+      }
+    },
+    [getMaxOffset]
+  );
+
+  // ── Auto-scroll tick ──
   const tick = useCallback(() => {
-    if (!playing || userScrolling.current) {
-      rafRef.current = requestAnimationFrame(tick);
-      return;
-    }
-    window.scrollBy(0, BASE_SPEED * speed);
-    // Stop at bottom
-    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
-      setPlaying(false);
+    if (playing && !userScrolling.current) {
+      const newOffset = offsetRef.current + BASE_SPEED * speed;
+      const max = getMaxOffset();
+
+      if (newOffset >= max) {
+        applyOffset(max);
+        setPlaying(false);
+      } else {
+        applyOffset(newOffset);
+      }
     }
     rafRef.current = requestAnimationFrame(tick);
-  }, [playing, speed]);
+  }, [playing, speed, applyOffset, getMaxOffset]);
 
   useEffect(() => {
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [tick]);
 
-  // ── Detect manual scroll → pause auto, resume after idle ──
+  // ── Mouse wheel / touch to manually scroll ──
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
 
-    const onScroll = () => {
-      const now = Date.now();
-      // If user scrolled (not our auto-scroll)
-      if (now - lastScrollTime.current > 50) {
-        userScrolling.current = true;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          userScrolling.current = false;
-        }, RESUME_DELAY);
-      }
-      lastScrollTime.current = now;
-    };
-
-    const onWheel = () => {
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
       userScrolling.current = true;
+      applyOffset(offsetRef.current + e.deltaY);
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         userScrolling.current = false;
       }, RESUME_DELAY);
     };
 
-    const onTouch = () => {
+    let lastTouchY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY;
       userScrolling.current = true;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      const dy = lastTouchY - e.touches[0].clientY;
+      lastTouchY = e.touches[0].clientY;
+      applyOffset(offsetRef.current + dy);
+    };
+    const onTouchEnd = () => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         userScrolling.current = false;
       }, RESUME_DELAY);
     };
 
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("touchmove", onTouch, { passive: true });
+    const vp = viewportRef.current;
+    if (vp) {
+      vp.addEventListener("wheel", onWheel, { passive: false });
+      vp.addEventListener("touchstart", onTouchStart, { passive: true });
+      vp.addEventListener("touchmove", onTouchMove, { passive: false });
+      vp.addEventListener("touchend", onTouchEnd, { passive: true });
+    }
 
     return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchmove", onTouch);
+      if (vp) {
+        vp.removeEventListener("wheel", onWheel);
+        vp.removeEventListener("touchstart", onTouchStart);
+        vp.removeEventListener("touchmove", onTouchMove);
+        vp.removeEventListener("touchend", onTouchEnd);
+      }
       clearTimeout(timeout);
     };
-  }, []);
+  }, [applyOffset]);
 
-  // ── Track active chapter ──
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = chapterRefs.current.indexOf(
-              entry.target as HTMLDivElement
-            );
-            if (idx !== -1) setActiveChapter(idx);
-          }
-        });
-      },
-      { rootMargin: "-40% 0px -40% 0px" }
-    );
-
-    chapterRefs.current.forEach((el) => {
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  // ── Keyboard shortcuts ──
+  // ── Keyboard ──
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === "Space" && e.target === document.body) {
@@ -126,64 +161,71 @@ export function NovelReader() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const cycleSpeed = () => {
-    setSpeedIdx((i) => (i + 1) % SPEEDS.length);
-  };
+  const cycleSpeed = () => setSpeedIdx((i) => (i + 1) % SPEEDS.length);
 
-  const scrollToChapter = (idx: number) => {
-    const el = chapterRefs.current[idx];
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+  const jumpToChapter = (idx: number) => {
+    const offset = chapterOffsets.current[idx];
+    if (offset !== undefined) {
+      applyOffset(offset);
     }
   };
 
+  // Scrollbar thumb height
+  const thumbHeight = Math.max(30, (1 / (NOVEL_CHAPTERS.length + 1)) * 100);
+
   return (
-    <div className={styles.container} ref={scrollRef}>
-      {/* ── Hero ── */}
-      <section className={styles.hero}>
-        <div className={styles.flourish} />
-        <h1 className={styles.heroTitle}>{NOVEL_TITLE}</h1>
-        <p className={styles.heroSubtitle}>{NOVEL_SUBTITLE}</p>
-        <p className={styles.heroAuthor}>by {NOVEL_AUTHOR}</p>
-        <div className={styles.flourish} />
-        <blockquote className={styles.epigraph}>
-          {NOVEL_EPIGRAPH}
-        </blockquote>
-        <p className={styles.scrollHint}>
-          Press space to begin reading · Scroll to navigate
-        </p>
-      </section>
+    <div className={styles.page}>
+      {/* ── Viewport ── */}
+      <div className={styles.viewport} ref={viewportRef}>
+        <div className={styles.track} ref={trackRef} style={{ top: 0 }}>
+          {/* Hero */}
+          <section className={styles.hero}>
+            <div className={styles.flourish} />
+            <h1 className={styles.heroTitle}>{NOVEL_TITLE}</h1>
+            <p className={styles.heroSubtitle}>{NOVEL_SUBTITLE}</p>
+            <p className={styles.heroAuthor}>by {NOVEL_AUTHOR}</p>
+            <div className={styles.flourish} />
+            <blockquote className={styles.epigraph}>{NOVEL_EPIGRAPH}</blockquote>
+          </section>
 
-      <ArtCollageBorder />
-
-      {/* ── Novel Text ── */}
-      <div className={styles.reader}>
-        {NOVEL_CHAPTERS.map((chapter, ci) => (
-          <div
-            key={ci}
-            className={styles.chapter}
-            ref={(el) => { chapterRefs.current[ci] = el; }}
-          >
-            <h2 className={styles.chapterTitle}>{chapter.title}</h2>
-            <div className={styles.chapterDivider} />
-            {chapter.paragraphs.map((para, pi) => (
-              <p key={pi} className={styles.paragraph}>
-                {para}
-              </p>
-            ))}
-            {ci < NOVEL_CHAPTERS.length - 1 && (
-              <ArtCollageBorder thin />
-            )}
-          </div>
-        ))}
-
-        {/* Link to Criticism page */}
-        <div className={styles.linkSection}>
           <ArtCollageBorder />
-          <div style={{ height: "2rem" }} />
-          <a href="/criticism" className={styles.linkBtn}>
-            Continue to Critical Reflections →
-          </a>
+
+          {/* Chapters */}
+          {NOVEL_CHAPTERS.map((chapter, ci) => (
+            <div key={ci} data-chapter={ci}>
+              <h2 className={styles.chapterTitle}>{chapter.title}</h2>
+              <div className={styles.chapterDivider} />
+              {chapter.paragraphs.map((para, pi) => (
+                <p key={pi} className={styles.paragraph}>
+                  {para}
+                </p>
+              ))}
+              {ci < NOVEL_CHAPTERS.length - 1 && <ArtCollageBorder thin />}
+            </div>
+          ))}
+
+          {/* Link to Criticism */}
+          <div className={styles.linkSection}>
+            <ArtCollageBorder />
+            <div style={{ height: "2rem" }} />
+            <a href="/criticism" className={styles.linkBtn}>
+              Continue to Critical Reflections →
+            </a>
+          </div>
+
+          {/* Spacer so last text can scroll fully through the viewport */}
+          <div className={styles.endSpacer} />
+        </div>
+
+        {/* Custom scrollbar */}
+        <div className={styles.scrollbar}>
+          <div
+            className={styles.scrollThumb}
+            style={{
+              height: `${thumbHeight}%`,
+              top: `${scrollProgress * (100 - thumbHeight)}%`,
+            }}
+          />
         </div>
       </div>
 
@@ -195,7 +237,7 @@ export function NovelReader() {
             className={`${styles.progressDot} ${
               i === activeChapter ? styles.progressDotActive : ""
             }`}
-            onClick={() => scrollToChapter(i)}
+            onClick={() => jumpToChapter(i)}
             title={chapter.title}
             aria-label={`Jump to ${chapter.title}`}
           />
@@ -207,7 +249,7 @@ export function NovelReader() {
         <button
           className={`${styles.controlBtn} ${styles.playBtn}`}
           onClick={() => setPlaying(!playing)}
-          aria-label={playing ? "Pause auto-scroll" : "Start auto-scroll"}
+          aria-label={playing ? "Pause" : "Play"}
           title="Space"
         >
           {playing ? "⏸" : "▶"}

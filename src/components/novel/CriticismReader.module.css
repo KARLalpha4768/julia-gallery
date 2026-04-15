@@ -1,9 +1,50 @@
-.container {
-  position: relative;
+.page {
+  position: fixed;
+  inset: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: #1a1a1a;
-  color: #e8e0d4;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+.viewport::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(180deg, #1a1a1a 0%, transparent 100%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.viewport::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(0deg, #1a1a1a 0%, transparent 100%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.track {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  will-change: top;
 }
 
 /* ── Hero ── */
@@ -15,7 +56,6 @@
   min-height: 100vh;
   padding: 4rem 2rem;
   text-align: center;
-  background: linear-gradient(180deg, #0d0d0d 0%, #1a1a1a 100%);
 }
 
 .heroTitle {
@@ -45,29 +85,6 @@
   width: 120px;
   height: 1px;
   background: linear-gradient(90deg, transparent, #6b5444, transparent);
-}
-
-.scrollHint {
-  margin-top: 3rem;
-  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #6b5444;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-/* ── Reader ── */
-.reader {
-  position: relative;
-  max-width: 60%;
-  margin: 0 auto;
-  padding: 4rem 2rem 12rem;
 }
 
 /* ── Excerpt Card ── */
@@ -113,7 +130,6 @@
   border-left: 2px solid rgba(201, 185, 154, 0.15);
 }
 
-/* Quoted text (from published authors) - different styling */
 .excerptTextQuote {
   font-style: italic;
   color: #c9b99a;
@@ -142,9 +158,13 @@
   color: #6b5444;
 }
 
-/* ── Controls Bar ── */
+.endSpacer {
+  height: 100vh;
+}
+
+/* ── Controls ── */
 .controls {
-  position: fixed;
+  position: absolute;
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
@@ -208,10 +228,31 @@
   background: rgba(201, 185, 154, 0.2);
 }
 
-/* ── Link back ── */
+/* Scrollbar */
+.scrollbar {
+  position: absolute;
+  right: 0.5rem;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: rgba(201, 185, 154, 0.1);
+  border-radius: 2px;
+  z-index: 10;
+}
+
+.scrollThumb {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: rgba(201, 185, 154, 0.4);
+  border-radius: 2px;
+  min-height: 30px;
+}
+
+/* Link */
 .linkSection {
   text-align: center;
-  padding: 4rem 2rem 6rem;
+  padding: 4rem 2rem 2rem;
 }
 
 .linkBtn {
@@ -233,10 +274,9 @@
   border-color: #c9b99a;
 }
 
-/* ── Mobile ── */
 @media (max-width: 768px) {
-  .reader {
-    padding: 3rem 1.25rem 10rem;
+  .track {
+    width: 85%;
   }
 
   .controls {
@@ -247,10 +287,5 @@
 
   .quoteOpen {
     font-size: 3rem;
-    top: 2rem;
-  }
-
-  .hero {
-    padding: 3rem 1.5rem;
   }
 }
