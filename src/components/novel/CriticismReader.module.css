@@ -65,30 +65,9 @@
 /* ── Reader ── */
 .reader {
   position: relative;
-  max-width: 44rem;
+  max-width: 60%;
   margin: 0 auto;
   padding: 4rem 2rem 12rem;
-}
-
-.reader::before,
-.reader::after {
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  height: 80px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.reader::before {
-  top: 0;
-  background: linear-gradient(180deg, #1a1a1a 0%, transparent 100%);
-}
-
-.reader::after {
-  bottom: 0;
-  background: linear-gradient(0deg, #1a1a1a 0%, transparent 100%);
 }
 
 /* ── Excerpt Card ── */
@@ -125,9 +104,9 @@
 .excerptText {
   font-family: var(--font-cormorant), "Cormorant Garamond", serif;
   font-size: clamp(1.1rem, 1.8vw, 1.35rem);
-  line-height: 2;
+  line-height: 1.5;
   color: #e8e0d4;
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.2rem;
   text-align: justify;
   hyphens: auto;
   padding-left: 1rem;

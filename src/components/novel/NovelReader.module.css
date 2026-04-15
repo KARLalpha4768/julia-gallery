@@ -87,31 +87,9 @@
 /* ── Reader Scroll Area ── */
 .reader {
   position: relative;
-  max-width: 42rem;
+  max-width: 60%;
   margin: 0 auto;
   padding: 4rem 2rem 12rem;
-}
-
-/* Top and bottom edge fades */
-.reader::before,
-.reader::after {
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  height: 80px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.reader::before {
-  top: 0;
-  background: linear-gradient(180deg, #faf6f1 0%, transparent 100%);
-}
-
-.reader::after {
-  bottom: 0;
-  background: linear-gradient(0deg, #faf6f1 0%, transparent 100%);
 }
 
 /* ── Chapter ── */
@@ -141,9 +119,9 @@
 .paragraph {
   font-family: var(--font-cormorant), "Cormorant Garamond", serif;
   font-size: clamp(1.1rem, 1.8vw, 1.3rem);
-  line-height: 2;
+  line-height: 1.5;
   color: #3d2b1f;
-  margin: 0 0 1.8rem;
+  margin: 0 0 1.2rem;
   text-align: justify;
   hyphens: auto;
 }
