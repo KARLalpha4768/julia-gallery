@@ -69,17 +69,39 @@ export function NovelReader() {
   const [visible, setVisible] = useState(false);
   const [showLeftBanner, setShowLeftBanner] = useState(false);
   const [showRightBanner, setShowRightBanner] = useState(false);
+  const [leftProgress, setLeftProgress] = useState(0);
+  const [rightProgress, setRightProgress] = useState(0);
+  const [tocOpen, setTocOpen] = useState(false);
   const rafRef = useRef<number>(0);
   const userScrollingLeft = useRef(false);
   const userScrollingRight = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const leftTitleRef = useRef<HTMLHeadingElement>(null);
   const rightTitleRef = useRef<HTMLHeadingElement>(null);
+  const chapterRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const left = useScrollPane();
   const right = useScrollPane();
 
   const speed = SPEEDS[speedIdx];
+
+  // ── Jump to a specific chapter ──
+  const jumpToChapter = useCallback(
+    (index: number) => {
+      const el = chapterRefs.current[index];
+      if (!el) return;
+      // The chapter's offsetTop within the track, minus some top padding
+      const target = Math.max(0, el.offsetTop - 60);
+      left.apply(target);
+      userScrollingLeft.current = true;
+      // Resume auto-scroll after delay
+      setTimeout(() => {
+        userScrollingLeft.current = false;
+      }, RESUME_DELAY);
+      setTocOpen(false);
+    },
+    [left]
+  );
 
   // ── Auto-scroll tick — both panes scroll together ──
   const tick = useCallback(() => {
@@ -109,6 +131,12 @@ export function NovelReader() {
       const gone = right.offsetRef.current > el.offsetTop + el.offsetHeight;
       setShowRightBanner(gone);
     }
+
+    // ── Update scroll progress ──
+    const leftMax = left.getMax();
+    const rightMax = right.getMax();
+    setLeftProgress(leftMax > 0 ? left.offsetRef.current / leftMax : 0);
+    setRightProgress(rightMax > 0 ? right.offsetRef.current / rightMax : 0);
 
     rafRef.current = requestAnimationFrame(tick);
   }, [playing, speed, left, right]);
@@ -226,13 +254,21 @@ export function NovelReader() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // ── Close TOC on outside click ──
+  useEffect(() => {
+    if (!tocOpen) return;
+    const handleClick = () => setTocOpen(false);
+    setTimeout(() => document.addEventListener("click", handleClick), 0);
+    return () => document.removeEventListener("click", handleClick);
+  }, [tocOpen]);
+
   const cycleSpeed = () => setSpeedIdx((i) => (i + 1) % SPEEDS.length);
 
   return (
     <div className={styles.wrapper} id="novel">
       {/* ── Philosophical Introduction ── */}
       <section className={styles.intro}>
-        <p className={styles.introKicker}>The Source & The Reflection</p>
+        <p className={styles.introKicker}>The Source &amp; The Reflection</p>
         <h2 className={styles.introTitle}>
           Where the Painter&rsquo;s Eye Meets the Critic&rsquo;s Word
         </h2>
@@ -303,6 +339,14 @@ export function NovelReader() {
       <div className={styles.page} ref={containerRef}>
         {/* ── LEFT PANE: Novel ── */}
       <div className={styles.paneLeft} ref={left.paneRef}>
+        {/* Scroll progress bar */}
+        <div className={styles.scrollBarLeft}>
+          <div
+            className={styles.scrollThumbLeft}
+            style={{ top: `${leftProgress * 100}%` }}
+          />
+        </div>
+
         <div className={styles.track} ref={left.trackRef} style={{ top: 0 }}>
           <h1 className={styles.novelTitle} ref={leftTitleRef}>{NOVEL_TITLE}</h1>
           <p className={styles.novelSubtitle}>{NOVEL_SUBTITLE}</p>
@@ -311,7 +355,10 @@ export function NovelReader() {
           <blockquote className={styles.epigraph}>{NOVEL_EPIGRAPH}</blockquote>
 
           {NOVEL_CHAPTERS.map((chapter, ci) => (
-            <div key={ci}>
+            <div
+              key={ci}
+              ref={(el) => { chapterRefs.current[ci] = el; }}
+            >
               <h2 className={styles.chapterTitle}>{chapter.title}</h2>
               <div className={styles.chapterDivider} />
               {chapter.paragraphs.map((para, pi) => (
@@ -332,6 +379,14 @@ export function NovelReader() {
 
       {/* ── RIGHT PANE: Criticism ── */}
       <div className={styles.paneRight} ref={right.paneRef}>
+        {/* Scroll progress bar */}
+        <div className={styles.scrollBarRight}>
+          <div
+            className={styles.scrollThumbRight}
+            style={{ top: `${rightProgress * 100}%` }}
+          />
+        </div>
+
         <div className={styles.track} ref={right.trackRef} style={{ top: 0 }}>
           <h1 className={styles.criticismTitle} ref={rightTitleRef}>{CRITICISM_TITLE}</h1>
           <p className={styles.criticismSubtitle}>{CRITICISM_SUBTITLE}</p>
@@ -377,6 +432,53 @@ export function NovelReader() {
           ⏱
         </button>
         <span className={styles.speedLabel}>{speed}×</span>
+        <div className={styles.divider} />
+
+        {/* Chapter Directory Button */}
+        <div className={styles.tocContainer}>
+          <button
+            className={styles.controlBtn}
+            onClick={(e) => {
+              e.stopPropagation();
+              setTocOpen((p) => !p);
+            }}
+            aria-label="Chapter directory"
+            title="Jump to chapter"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              <line x1="8" y1="7" x2="16" y2="7" />
+              <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
+          </button>
+
+          {/* TOC Dropdown */}
+          {tocOpen && (
+            <div
+              className={styles.tocDropdown}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.tocHeader}>
+                <span className={styles.tocLabel}>Chapters</span>
+                <span className={styles.tocBookTitle}>{NOVEL_TITLE}</span>
+              </div>
+              <ul className={styles.tocList}>
+                {NOVEL_CHAPTERS.map((chapter, i) => (
+                  <li key={i}>
+                    <button
+                      className={styles.tocItem}
+                      onClick={() => jumpToChapter(i)}
+                    >
+                      <span className={styles.tocNumber}>{i + 1}</span>
+                      <span className={styles.tocChapterTitle}>{chapter.title}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
       </div>
     </div>

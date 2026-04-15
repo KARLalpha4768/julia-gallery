@@ -394,6 +394,55 @@
   height: 100vh;
 }
 
+/* ── Scroll Progress Bars ── */
+.scrollBarLeft {
+  position: absolute;
+  left: 4px;
+  top: 10%;
+  bottom: 10%;
+  width: 3px;
+  background: rgba(42, 26, 0, 0.15);
+  border-radius: 2px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scrollThumbLeft {
+  position: absolute;
+  left: -2px;
+  width: 7px;
+  height: 40px;
+  background: rgba(42, 26, 0, 0.5);
+  border-radius: 4px;
+  transform: translateY(-50%);
+  transition: top 0.08s linear;
+  box-shadow: 0 0 6px rgba(42, 26, 0, 0.3);
+}
+
+.scrollBarRight {
+  position: absolute;
+  right: 4px;
+  top: 10%;
+  bottom: 10%;
+  width: 3px;
+  background: rgba(201, 185, 154, 0.1);
+  border-radius: 2px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scrollThumbRight {
+  position: absolute;
+  right: -2px;
+  width: 7px;
+  height: 40px;
+  background: rgba(201, 185, 154, 0.5);
+  border-radius: 4px;
+  transform: translateY(-50%);
+  transition: top 0.08s linear;
+  box-shadow: 0 0 6px rgba(201, 185, 154, 0.3);
+}
+
 /* ── Controls Bar (centered at bottom) ── */
 .controls {
   position: absolute;
@@ -460,6 +509,112 @@
   background: rgba(201, 185, 154, 0.3);
 }
 
+/* ── Table of Contents ── */
+.tocContainer {
+  position: relative;
+}
+
+.tocDropdown {
+  position: absolute;
+  bottom: calc(100% + 16px);
+  right: -8px;
+  width: 260px;
+  background: rgba(20, 20, 20, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(201, 185, 154, 0.25);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  padding: 0;
+  overflow: hidden;
+  animation: tocSlideUp 0.2s ease-out;
+}
+
+@keyframes tocSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tocHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid rgba(201, 185, 154, 0.15);
+}
+
+.tocLabel {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #c9b99a;
+}
+
+.tocBookTitle {
+  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #8b7355;
+}
+
+.tocList {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.tocItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: #e8e0d4;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-cormorant), "Cormorant Garamond", serif;
+  font-size: 0.9rem;
+  transition: background 0.15s ease;
+}
+
+.tocItem:hover {
+  background: rgba(201, 185, 154, 0.12);
+}
+
+.tocNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 185, 154, 0.3);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #c9b99a;
+  flex-shrink: 0;
+  font-family: var(--font-inter), Inter, sans-serif;
+}
+
+.tocChapterTitle {
+  color: #e8e0d4;
+  line-height: 1.3;
+}
+
+.tocItem:hover .tocNumber {
+  background: rgba(201, 185, 154, 0.2);
+  border-color: #c9b99a;
+}
+
 /* ── Mobile: stack vertically ── */
 @media (max-width: 768px) {
   .page {
@@ -508,4 +663,20 @@
     flex-direction: column;
     gap: 2rem;
   }
+
+  /* Scroll bars on mobile — move to outer edges */
+  .scrollBarLeft {
+    left: 2px;
+  }
+
+  .scrollBarRight {
+    right: 2px;
+  }
+
+  /* TOC dropdown adjusts for mobile */
+  .tocDropdown {
+    right: -40px;
+    width: 240px;
+  }
 }
+
