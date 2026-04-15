@@ -109,16 +109,23 @@ export function NovelReader() {
 
   // ── Auto-scroll tick — both panes scroll together ──
   // Uses refs instead of state to avoid stale closures in rAF loop
+  // Right pane scrolls proportionally so both finish at the same time
   const tick = useCallback(() => {
     const delta = BASE_SPEED * speedRef.current;
     if (playingRef.current) {
+      const leftMax = left.getMax();
+      const rightMax = right.getMax();
+      // Scale right-pane speed so both end simultaneously
+      const ratio = leftMax > 0 ? rightMax / leftMax : 1;
+      const rightDelta = delta * ratio;
+
       let leftDone = false;
       let rightDone = false;
       if (!userScrollingLeft.current) {
         leftDone = left.apply(left.offsetRef.current + delta);
       }
       if (!userScrollingRight.current) {
-        rightDone = right.apply(right.offsetRef.current + delta);
+        rightDone = right.apply(right.offsetRef.current + rightDelta);
       }
       if (leftDone && rightDone) {
         setPlaying(false);
