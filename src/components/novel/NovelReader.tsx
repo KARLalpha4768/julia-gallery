@@ -16,7 +16,7 @@ import {
 import { ArtCollageBorder } from "./ArtCollageBorder";
 import styles from "./NovelReader.module.css";
 
-const SPEEDS = [0.5, 1, 1.5, 2] as const;
+const SPEEDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.2, 1.5, 2] as const;
 const BASE_SPEED = 0.55;
 const RESUME_DELAY = 3000;
 
@@ -65,7 +65,7 @@ function useScrollPane() {
 
 export function NovelReader() {
   const [playing, setPlaying] = useState(false);
-  const [speedIdx, setSpeedIdx] = useState(1);
+  const [speedIdx, setSpeedIdx] = useState(9);
   const [visible, setVisible] = useState(false);
   const [showLeftBanner, setShowLeftBanner] = useState(false);
   const [showRightBanner, setShowRightBanner] = useState(false);
