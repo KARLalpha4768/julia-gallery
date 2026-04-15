@@ -125,10 +125,11 @@ export function CriticismReader() {
 
   const cycleSpeed = () => setSpeedIdx((i) => (i + 1) % SPEEDS.length);
 
-  const categoryLabels = {
+  const categoryLabels: Record<string, string> = {
     literary: "Literary Criticism",
     art: "Art Criticism",
     poetics: "Poetics",
+    philosophy: "Philosophy of Art",
   };
 
   return (
