@@ -285,17 +285,13 @@ export function NovelReader() {
         </div>
       </section>
 
-      <div className={styles.splitBorder}>
-        <div className={styles.splitBorderHalf}>
-          <ArtCollageBorder />
+      <div className={styles.bannerBar}>
+        <ArtCollageBorder />
+        <div className={styles.bannerTitles}>
           <div className={`${styles.bannerTitle} ${showLeftBanner ? styles.bannerTitleVisible : ''}`}>
             {NOVEL_TITLE}
             <span className={styles.bannerSubtitle}>Novel</span>
           </div>
-        </div>
-        <div className={styles.splitBorderGap} />
-        <div className={styles.splitBorderHalf}>
-          <ArtCollageBorder />
           <div className={`${styles.bannerTitle} ${showRightBanner ? styles.bannerTitleVisible : ''}`}>
             {CRITICISM_TITLE}
             <span className={styles.bannerSubtitle}>Critique</span>

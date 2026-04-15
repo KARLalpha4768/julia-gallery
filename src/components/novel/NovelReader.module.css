@@ -93,33 +93,26 @@
   color: #7a6a5a;
 }
 
-/* ── Split Border (above each pane) ── */
-.splitBorder {
-  display: flex;
-  flex-direction: row;
+/* ── Banner Bar (continuous colorful band) ── */
+.bannerBar {
+  position: relative;
   width: 100%;
 }
 
-.splitBorderHalf {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-}
-
-.splitBorderGap {
-  width: 80px;
-  flex-shrink: 0;
-  background: #0d0d0d;
-}
-
-/* ── Banner Titles (on the colorful band) ── */
-.bannerTitle {
+.bannerTitles {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+/* ── Banner Titles (on the colorful band) ── */
+.bannerTitle {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -514,14 +507,5 @@
   .introColumns {
     flex-direction: column;
     gap: 2rem;
-  }
-
-  .splitBorder {
-    flex-direction: column;
-  }
-
-  .splitBorderGap {
-    width: 100%;
-    height: 60px;
   }
 }
