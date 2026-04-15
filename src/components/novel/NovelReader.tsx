@@ -67,10 +67,14 @@ export function NovelReader() {
   const [playing, setPlaying] = useState(false);
   const [speedIdx, setSpeedIdx] = useState(1);
   const [visible, setVisible] = useState(false);
+  const [showLeftBanner, setShowLeftBanner] = useState(false);
+  const [showRightBanner, setShowRightBanner] = useState(false);
   const rafRef = useRef<number>(0);
   const userScrollingLeft = useRef(false);
   const userScrollingRight = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const leftTitleRef = useRef<HTMLHeadingElement>(null);
+  const rightTitleRef = useRef<HTMLHeadingElement>(null);
 
   const left = useScrollPane();
   const right = useScrollPane();
@@ -93,6 +97,19 @@ export function NovelReader() {
         setPlaying(false);
       }
     }
+
+    // ── Check if titles have scrolled past ──
+    if (leftTitleRef.current) {
+      const el = leftTitleRef.current;
+      const gone = left.offsetRef.current > el.offsetTop + el.offsetHeight;
+      setShowLeftBanner(gone);
+    }
+    if (rightTitleRef.current) {
+      const el = rightTitleRef.current;
+      const gone = right.offsetRef.current > el.offsetTop + el.offsetHeight;
+      setShowRightBanner(gone);
+    }
+
     rafRef.current = requestAnimationFrame(tick);
   }, [playing, speed, left, right]);
 
@@ -271,12 +288,12 @@ export function NovelReader() {
       <div className={styles.splitBorder}>
         <div className={styles.splitBorderHalf}>
           <ArtCollageBorder />
-          <div className={styles.bannerTitle}>{NOVEL_TITLE}</div>
+          <div className={`${styles.bannerTitle} ${showLeftBanner ? styles.bannerTitleVisible : ''}`}>{NOVEL_TITLE}</div>
         </div>
         <div className={styles.splitBorderGap} />
         <div className={styles.splitBorderHalf}>
           <ArtCollageBorder />
-          <div className={styles.bannerTitle}>{CRITICISM_TITLE}</div>
+          <div className={`${styles.bannerTitle} ${showRightBanner ? styles.bannerTitleVisible : ''}`}>{CRITICISM_TITLE}</div>
         </div>
       </div>
 
@@ -285,7 +302,7 @@ export function NovelReader() {
         {/* ── LEFT PANE: Novel ── */}
       <div className={styles.paneLeft} ref={left.paneRef}>
         <div className={styles.track} ref={left.trackRef} style={{ top: 0 }}>
-          <h1 className={styles.novelTitle}>{NOVEL_TITLE}</h1>
+          <h1 className={styles.novelTitle} ref={leftTitleRef}>{NOVEL_TITLE}</h1>
           <p className={styles.novelSubtitle}>{NOVEL_SUBTITLE}</p>
           <p className={styles.novelAuthor}>by {NOVEL_AUTHOR}</p>
           <div className={styles.flourish} />
@@ -314,7 +331,7 @@ export function NovelReader() {
       {/* ── RIGHT PANE: Criticism ── */}
       <div className={styles.paneRight} ref={right.paneRef}>
         <div className={styles.track} ref={right.trackRef} style={{ top: 0 }}>
-          <h1 className={styles.criticismTitle}>{CRITICISM_TITLE}</h1>
+          <h1 className={styles.criticismTitle} ref={rightTitleRef}>{CRITICISM_TITLE}</h1>
           <p className={styles.criticismSubtitle}>{CRITICISM_SUBTITLE}</p>
 
           {CRITICISM_EXCERPTS.map((excerpt, i) => (
