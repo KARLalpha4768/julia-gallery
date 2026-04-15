@@ -33,11 +33,14 @@ export function Header() {
           <a href="/#collection" className={styles.navLink}>
             Collection
           </a>
-          <a href="/#about" className={styles.navLink}>
-            About the Artist
-          </a>
           <a href="/#concepts" className={styles.navLink}>
             Concepts
+          </a>
+          <a href="/#film" className={styles.navLink}>
+            Film
+          </a>
+          <a href="/#about" className={styles.navLink}>
+            About
           </a>
           <a href="/#novel" className={styles.navLink}>
             Novel
@@ -92,11 +95,14 @@ export function Header() {
           <a href="/#collection" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
             Collection
           </a>
-          <a href="/#about" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
-            About the Artist
-          </a>
           <a href="/#concepts" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
             Concepts
+          </a>
+          <a href="/#film" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+            Film
+          </a>
+          <a href="/#about" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
+            About
           </a>
           <a href="/#novel" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
             Novel
