@@ -425,11 +425,12 @@ export function NovelReader() {
         </button>
         <div className={styles.divider} />
         <button
-          className={styles.controlBtn}
+          className={`${styles.controlBtn} ${styles.labeledBtn}`}
           onClick={cycleSpeed}
           aria-label="Change speed"
         >
           ⏱
+          <span className={styles.btnLabel}>Speed</span>
         </button>
         <span className={styles.speedLabel}>{speed}×</span>
         <div className={styles.divider} />
@@ -437,7 +438,7 @@ export function NovelReader() {
         {/* Chapter Directory Button */}
         <div className={styles.tocContainer}>
           <button
-            className={styles.controlBtn}
+            className={`${styles.controlBtn} ${styles.labeledBtn}`}
             onClick={(e) => {
               e.stopPropagation();
               setTocOpen((p) => !p);
@@ -445,12 +446,13 @@ export function NovelReader() {
             aria-label="Chapter directory"
             title="Jump to chapter"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
               <line x1="8" y1="7" x2="16" y2="7" />
               <line x1="8" y1="11" x2="14" y2="11" />
             </svg>
+            <span className={styles.btnLabel}>Chapters</span>
           </button>
 
           {/* TOC Dropdown */}
