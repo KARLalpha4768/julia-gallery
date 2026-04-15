@@ -271,10 +271,12 @@ export function NovelReader() {
       <div className={styles.splitBorder}>
         <div className={styles.splitBorderHalf}>
           <ArtCollageBorder />
+          <div className={styles.bannerTitle}>{NOVEL_TITLE}</div>
         </div>
         <div className={styles.splitBorderGap} />
         <div className={styles.splitBorderHalf}>
           <ArtCollageBorder />
+          <div className={styles.bannerTitle}>{CRITICISM_TITLE}</div>
         </div>
       </div>
 
@@ -282,7 +284,6 @@ export function NovelReader() {
       <div className={styles.page} ref={containerRef}>
         {/* ── LEFT PANE: Novel ── */}
       <div className={styles.paneLeft} ref={left.paneRef}>
-        <div className={styles.paneHeader + ' ' + styles.paneHeaderLeft}>{NOVEL_TITLE}</div>
         <div className={styles.track} ref={left.trackRef} style={{ top: 0 }}>
           <h1 className={styles.novelTitle}>{NOVEL_TITLE}</h1>
           <p className={styles.novelSubtitle}>{NOVEL_SUBTITLE}</p>
@@ -312,7 +313,6 @@ export function NovelReader() {
 
       {/* ── RIGHT PANE: Criticism ── */}
       <div className={styles.paneRight} ref={right.paneRef}>
-        <div className={styles.paneHeader + ' ' + styles.paneHeaderRight}>{CRITICISM_TITLE}</div>
         <div className={styles.track} ref={right.trackRef} style={{ top: 0 }}>
           <h1 className={styles.criticismTitle}>{CRITICISM_TITLE}</h1>
           <p className={styles.criticismSubtitle}>{CRITICISM_SUBTITLE}</p>

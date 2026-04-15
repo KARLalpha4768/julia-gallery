@@ -112,35 +112,28 @@
   background: #0d0d0d;
 }
 
-/* ── Static Pane Headers (pinned title bars) ── */
-.paneHeader {
+/* ── Banner Titles (on the colorful band) ── */
+.bannerTitle {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 10;
-  text-align: center;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-cormorant), "Cormorant Garamond", serif;
-  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  font-size: clamp(1.2rem, 2.2vw, 1.8rem);
   font-weight: 300;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1.1;
-  padding: 0.8rem 1.5rem 1.5rem;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6), 0 0 16px rgba(0, 0, 0, 0.3);
   pointer-events: none;
   user-select: none;
-}
-
-.paneHeaderLeft {
-  color: #2a1a00;
-  background: #c49b3a;
-  box-shadow: 0 8px 20px 8px #c49b3a;
-}
-
-.paneHeaderRight {
-  color: #c9b99a;
-  background: #1a1a1a;
-  box-shadow: 0 8px 20px 8px #1a1a1a;
+  padding: 0 1.5rem;
 }
 
 /* ── Dueling Panes ── */
