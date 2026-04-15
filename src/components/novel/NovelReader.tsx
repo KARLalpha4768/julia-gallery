@@ -288,12 +288,18 @@ export function NovelReader() {
       <div className={styles.splitBorder}>
         <div className={styles.splitBorderHalf}>
           <ArtCollageBorder />
-          <div className={`${styles.bannerTitle} ${showLeftBanner ? styles.bannerTitleVisible : ''}`}>{NOVEL_TITLE}</div>
+          <div className={`${styles.bannerTitle} ${showLeftBanner ? styles.bannerTitleVisible : ''}`}>
+            {NOVEL_TITLE}
+            <span className={styles.bannerSubtitle}>Novel</span>
+          </div>
         </div>
         <div className={styles.splitBorderGap} />
         <div className={styles.splitBorderHalf}>
           <ArtCollageBorder />
-          <div className={`${styles.bannerTitle} ${showRightBanner ? styles.bannerTitleVisible : ''}`}>{CRITICISM_TITLE}</div>
+          <div className={`${styles.bannerTitle} ${showRightBanner ? styles.bannerTitleVisible : ''}`}>
+            {CRITICISM_TITLE}
+            <span className={styles.bannerSubtitle}>Critique</span>
+          </div>
         </div>
       </div>
 
