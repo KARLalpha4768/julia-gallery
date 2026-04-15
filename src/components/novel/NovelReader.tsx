@@ -65,7 +65,7 @@ function useScrollPane() {
 
 export function NovelReader() {
   const [playing, setPlaying] = useState(false);
-  const [speedIdx, setSpeedIdx] = useState(9);
+  const [speedIdx, setSpeedIdx] = useState(4);
   const [visible, setVisible] = useState(false);
   const [showLeftBanner, setShowLeftBanner] = useState(false);
   const [showRightBanner, setShowRightBanner] = useState(false);
