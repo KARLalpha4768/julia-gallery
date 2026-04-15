@@ -26,9 +26,10 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://erze-art.vercel.app"),
-  title: "Julia — Indo-Pacific Contemporary Art",
+  title: "Julia Art — Indo-Pacific Contemporary Art",
   description:
     "Discover original contemporary artworks from the Indo-Pacific region. Museum-grade paintings, curated collections, and exclusive artist editions.",
+  applicationName: "Julia Art",
   keywords: [
     "contemporary art",
     "Indo-Pacific art",
@@ -37,10 +38,11 @@ export const metadata: Metadata = {
     "art commerce",
     "abstract art",
     "modern art",
-    "Julia",
+    "Julia Art",
   ],
   openGraph: {
-    title: "Julia — Indo-Pacific Contemporary Art",
+    title: "Julia Art — Indo-Pacific Contemporary Art",
+    siteName: "Julia Art",
     description:
       "Discover original contemporary artworks from the Indo-Pacific region.",
     type: "website",
