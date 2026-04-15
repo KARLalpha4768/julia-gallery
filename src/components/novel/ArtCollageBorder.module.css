@@ -118,3 +118,30 @@
 .thin .gradient {
   animation-duration: 30s;
 }
+
+/* Vertical variant (for split-screen divider) */
+.vertical {
+  width: 80px;
+  height: 100%;
+}
+
+.vertical .gradient {
+  background: linear-gradient(
+    180deg,
+    #e63946, #2d6a4f, #f77f00, #264653, #e76f51,
+    #6b0f1a, #b7094c, #a01a58, #560bad, #3a0ca3,
+    #f4a261, #e9c46a, #2a9d8f, #264653, #e76f51,
+    #1a1a2e, #fcbf49, #d62828, #003049, #f77f00,
+    #e63946
+  );
+  background-size: 100% 400%;
+  animation: shiftCollageVertical 60s ease-in-out infinite;
+}
+
+@keyframes shiftCollageVertical {
+  0% { background-position: 50% 0%; }
+  25% { background-position: 50% 100%; }
+  50% { background-position: 50% 200%; }
+  75% { background-position: 50% 300%; }
+  100% { background-position: 50% 400%; }
+}

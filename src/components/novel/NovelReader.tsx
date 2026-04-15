@@ -8,146 +8,169 @@ import {
   NOVEL_EPIGRAPH,
   NOVEL_CHAPTERS,
 } from "@/lib/novel-text";
+import {
+  CRITICISM_TITLE,
+  CRITICISM_SUBTITLE,
+  CRITICISM_EXCERPTS,
+} from "@/lib/criticism-text";
 import { ArtCollageBorder } from "./ArtCollageBorder";
 import styles from "./NovelReader.module.css";
 
 const SPEEDS = [0.5, 1, 1.5, 2] as const;
-/** Pixels per frame at 60fps. 1x ≈ 50 wpm reading pace */
 const BASE_SPEED = 0.55;
 const RESUME_DELAY = 3000;
 
-export function NovelReader() {
-  const [playing, setPlaying] = useState(false);
-  const [speedIdx, setSpeedIdx] = useState(1);
-  const [activeChapter, setActiveChapter] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+function isDirectQuote(author: string): boolean {
+  return !author.startsWith("On ") && author !== "Critical Commentary";
+}
 
+const categoryLabels: Record<string, string> = {
+  literary: "Literary Criticism",
+  art: "Art Criticism",
+  poetics: "Poetics",
+};
+
+/**
+ * Teleprompter pane — drives a single scrolling track
+ */
+function useScrollPane() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
+  const paneRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
-  const rafRef = useRef<number>(0);
-  const userScrolling = useRef(false);
-  const chapterOffsets = useRef<number[]>([]);
 
-  const speed = SPEEDS[speedIdx];
-
-  // ── Measure chapter positions once track is rendered ──
-  useEffect(() => {
-    if (!trackRef.current) return;
-    const chapters = trackRef.current.querySelectorAll("[data-chapter]");
-    chapterOffsets.current = Array.from(chapters).map(
-      (el) => (el as HTMLElement).offsetTop
-    );
-  }, []);
-
-  // ── Get max scroll distance ──
-  const getMaxOffset = useCallback(() => {
-    if (!trackRef.current || !viewportRef.current) return 0;
+  const getMax = useCallback(() => {
+    if (!trackRef.current || !paneRef.current) return 0;
     return Math.max(
       0,
-      trackRef.current.scrollHeight - viewportRef.current.clientHeight
+      trackRef.current.scrollHeight - paneRef.current.clientHeight
     );
   }, []);
 
-  // ── Apply offset to track position ──
-  const applyOffset = useCallback(
-    (newOffset: number) => {
-      const max = getMaxOffset();
-      const clamped = Math.max(0, Math.min(newOffset, max));
+  const apply = useCallback(
+    (val: number) => {
+      const max = getMax();
+      const clamped = Math.max(0, Math.min(val, max));
       offsetRef.current = clamped;
-
       if (trackRef.current) {
         trackRef.current.style.top = `-${clamped}px`;
       }
-
-      // Update progress
-      if (max > 0) {
-        setScrollProgress(clamped / max);
-      }
-
-      // Update active chapter
-      const offsets = chapterOffsets.current;
-      for (let i = offsets.length - 1; i >= 0; i--) {
-        if (clamped >= offsets[i] - 200) {
-          setActiveChapter(i);
-          break;
-        }
-      }
+      return clamped >= max;
     },
-    [getMaxOffset]
+    [getMax]
   );
 
-  // ── Auto-scroll tick ──
-  const tick = useCallback(() => {
-    if (playing && !userScrolling.current) {
-      const newOffset = offsetRef.current + BASE_SPEED * speed;
-      const max = getMaxOffset();
+  return { trackRef, paneRef, offsetRef, getMax, apply };
+}
 
-      if (newOffset >= max) {
-        applyOffset(max);
+export function NovelReader() {
+  const [playing, setPlaying] = useState(true); // auto-start
+  const [speedIdx, setSpeedIdx] = useState(1);
+  const rafRef = useRef<number>(0);
+  const userScrollingLeft = useRef(false);
+  const userScrollingRight = useRef(false);
+
+  const left = useScrollPane();
+  const right = useScrollPane();
+
+  const speed = SPEEDS[speedIdx];
+
+  // ── Auto-scroll tick — both panes scroll together ──
+  const tick = useCallback(() => {
+    const delta = BASE_SPEED * speed;
+    if (playing) {
+      let leftDone = false;
+      let rightDone = false;
+      if (!userScrollingLeft.current) {
+        leftDone = left.apply(left.offsetRef.current + delta);
+      }
+      if (!userScrollingRight.current) {
+        rightDone = right.apply(right.offsetRef.current + delta);
+      }
+      if (leftDone && rightDone) {
         setPlaying(false);
-      } else {
-        applyOffset(newOffset);
       }
     }
     rafRef.current = requestAnimationFrame(tick);
-  }, [playing, speed, applyOffset, getMaxOffset]);
+  }, [playing, speed, left, right]);
 
   useEffect(() => {
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
   }, [tick]);
 
-  // ── Mouse wheel / touch to manually scroll ──
+  // ── Wire up wheel/touch for each pane ──
+  const wirePane = useCallback(
+    (
+      paneEl: HTMLDivElement | null,
+      applyFn: (v: number) => boolean,
+      offsetRef: React.MutableRefObject<number>,
+      userScrolling: React.MutableRefObject<boolean>
+    ) => {
+      if (!paneEl) return () => {};
+      let timeout: ReturnType<typeof setTimeout>;
+
+      const onWheel = (e: WheelEvent) => {
+        e.preventDefault();
+        userScrolling.current = true;
+        applyFn(offsetRef.current + e.deltaY);
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          userScrolling.current = false;
+        }, RESUME_DELAY);
+      };
+
+      let lastY = 0;
+      const onTouchStart = (e: TouchEvent) => {
+        lastY = e.touches[0].clientY;
+        userScrolling.current = true;
+      };
+      const onTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
+        const dy = lastY - e.touches[0].clientY;
+        lastY = e.touches[0].clientY;
+        applyFn(offsetRef.current + dy);
+      };
+      const onTouchEnd = () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          userScrolling.current = false;
+        }, RESUME_DELAY);
+      };
+
+      paneEl.addEventListener("wheel", onWheel, { passive: false });
+      paneEl.addEventListener("touchstart", onTouchStart, { passive: true });
+      paneEl.addEventListener("touchmove", onTouchMove, { passive: false });
+      paneEl.addEventListener("touchend", onTouchEnd, { passive: true });
+
+      return () => {
+        paneEl.removeEventListener("wheel", onWheel);
+        paneEl.removeEventListener("touchstart", onTouchStart);
+        paneEl.removeEventListener("touchmove", onTouchMove);
+        paneEl.removeEventListener("touchend", onTouchEnd);
+        clearTimeout(timeout);
+      };
+    },
+    []
+  );
+
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      userScrolling.current = true;
-      applyOffset(offsetRef.current + e.deltaY);
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        userScrolling.current = false;
-      }, RESUME_DELAY);
-    };
-
-    let lastTouchY = 0;
-    const onTouchStart = (e: TouchEvent) => {
-      lastTouchY = e.touches[0].clientY;
-      userScrolling.current = true;
-    };
-    const onTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
-      const dy = lastTouchY - e.touches[0].clientY;
-      lastTouchY = e.touches[0].clientY;
-      applyOffset(offsetRef.current + dy);
-    };
-    const onTouchEnd = () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        userScrolling.current = false;
-      }, RESUME_DELAY);
-    };
-
-    const vp = viewportRef.current;
-    if (vp) {
-      vp.addEventListener("wheel", onWheel, { passive: false });
-      vp.addEventListener("touchstart", onTouchStart, { passive: true });
-      vp.addEventListener("touchmove", onTouchMove, { passive: false });
-      vp.addEventListener("touchend", onTouchEnd, { passive: true });
-    }
-
+    const cleanL = wirePane(
+      left.paneRef.current,
+      left.apply,
+      left.offsetRef,
+      userScrollingLeft
+    );
+    const cleanR = wirePane(
+      right.paneRef.current,
+      right.apply,
+      right.offsetRef,
+      userScrollingRight
+    );
     return () => {
-      if (vp) {
-        vp.removeEventListener("wheel", onWheel);
-        vp.removeEventListener("touchstart", onTouchStart);
-        vp.removeEventListener("touchmove", onTouchMove);
-        vp.removeEventListener("touchend", onTouchEnd);
-      }
-      clearTimeout(timeout);
+      cleanL();
+      cleanR();
     };
-  }, [applyOffset]);
+  }, [wirePane, left, right]);
 
   // ── Keyboard ──
   useEffect(() => {
@@ -163,36 +186,19 @@ export function NovelReader() {
 
   const cycleSpeed = () => setSpeedIdx((i) => (i + 1) % SPEEDS.length);
 
-  const jumpToChapter = (idx: number) => {
-    const offset = chapterOffsets.current[idx];
-    if (offset !== undefined) {
-      applyOffset(offset);
-    }
-  };
-
-  // Scrollbar thumb height
-  const thumbHeight = Math.max(30, (1 / (NOVEL_CHAPTERS.length + 1)) * 100);
-
   return (
     <div className={styles.page}>
-      {/* ── Viewport ── */}
-      <div className={styles.viewport} ref={viewportRef}>
-        <div className={styles.track} ref={trackRef} style={{ top: 0 }}>
-          {/* Hero */}
-          <section className={styles.hero}>
-            <div className={styles.flourish} />
-            <h1 className={styles.heroTitle}>{NOVEL_TITLE}</h1>
-            <p className={styles.heroSubtitle}>{NOVEL_SUBTITLE}</p>
-            <p className={styles.heroAuthor}>by {NOVEL_AUTHOR}</p>
-            <div className={styles.flourish} />
-            <blockquote className={styles.epigraph}>{NOVEL_EPIGRAPH}</blockquote>
-          </section>
+      {/* ── LEFT PANE: Novel ── */}
+      <div className={styles.paneLeft} ref={left.paneRef}>
+        <div className={styles.track} ref={left.trackRef} style={{ top: 0 }}>
+          <h1 className={styles.novelTitle}>{NOVEL_TITLE}</h1>
+          <p className={styles.novelSubtitle}>{NOVEL_SUBTITLE}</p>
+          <p className={styles.novelAuthor}>by {NOVEL_AUTHOR}</p>
+          <div className={styles.flourish} />
+          <blockquote className={styles.epigraph}>{NOVEL_EPIGRAPH}</blockquote>
 
-          <ArtCollageBorder />
-
-          {/* Chapters */}
           {NOVEL_CHAPTERS.map((chapter, ci) => (
-            <div key={ci} data-chapter={ci}>
+            <div key={ci}>
               <h2 className={styles.chapterTitle}>{chapter.title}</h2>
               <div className={styles.chapterDivider} />
               {chapter.paragraphs.map((para, pi) => (
@@ -200,48 +206,43 @@ export function NovelReader() {
                   {para}
                 </p>
               ))}
-              {ci < NOVEL_CHAPTERS.length - 1 && <ArtCollageBorder thin />}
             </div>
           ))}
-
-          {/* Link to Criticism */}
-          <div className={styles.linkSection}>
-            <ArtCollageBorder />
-            <div style={{ height: "2rem" }} />
-            <a href="/criticism" className={styles.linkBtn}>
-              Continue to Critical Reflections →
-            </a>
-          </div>
-
-          {/* Spacer so last text can scroll fully through the viewport */}
           <div className={styles.endSpacer} />
-        </div>
-
-        {/* Custom scrollbar */}
-        <div className={styles.scrollbar}>
-          <div
-            className={styles.scrollThumb}
-            style={{
-              height: `${thumbHeight}%`,
-              top: `${scrollProgress * (100 - thumbHeight)}%`,
-            }}
-          />
         </div>
       </div>
 
-      {/* ── Chapter Progress Rail ── */}
-      <div className={styles.progressRail}>
-        {NOVEL_CHAPTERS.map((chapter, i) => (
-          <button
-            key={i}
-            className={`${styles.progressDot} ${
-              i === activeChapter ? styles.progressDotActive : ""
-            }`}
-            onClick={() => jumpToChapter(i)}
-            title={chapter.title}
-            aria-label={`Jump to ${chapter.title}`}
-          />
-        ))}
+      {/* ── CENTER: Art Collage Border ── */}
+      <div className={styles.borderColumn}>
+        <ArtCollageBorder vertical />
+      </div>
+
+      {/* ── RIGHT PANE: Criticism ── */}
+      <div className={styles.paneRight} ref={right.paneRef}>
+        <div className={styles.track} ref={right.trackRef} style={{ top: 0 }}>
+          <h1 className={styles.criticismTitle}>{CRITICISM_TITLE}</h1>
+          <p className={styles.criticismSubtitle}>{CRITICISM_SUBTITLE}</p>
+
+          {CRITICISM_EXCERPTS.map((excerpt, i) => (
+            <div key={i} className={styles.excerpt}>
+              <span className={styles.categoryTag}>
+                {categoryLabels[excerpt.category]}
+              </span>
+              <p
+                className={`${styles.excerptText} ${
+                  isDirectQuote(excerpt.author) ? styles.excerptTextQuote : ""
+                }`}
+              >
+                {excerpt.text}
+              </p>
+              <div className={styles.attribution}>
+                <span className={styles.author}>{excerpt.author}</span>
+                <span className={styles.source}>{excerpt.source}</span>
+              </div>
+            </div>
+          ))}
+          <div className={styles.endSpacer} />
+        </div>
       </div>
 
       {/* ── Controls ── */}
@@ -259,7 +260,6 @@ export function NovelReader() {
           className={styles.controlBtn}
           onClick={cycleSpeed}
           aria-label="Change speed"
-          title="Reading speed"
         >
           ⏱
         </button>
