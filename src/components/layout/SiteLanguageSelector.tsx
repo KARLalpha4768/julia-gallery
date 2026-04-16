@@ -16,6 +16,7 @@ const LANGUAGES = [
   { code: "es", label: "ES", title: "Español", gtCode: "es" },
   { code: "it", label: "IT", title: "Italiano", gtCode: "it" },
   { code: "pt", label: "PT", title: "Português", gtCode: "pt" },
+  { code: "af", label: "AF", title: "Afrikaans", gtCode: "af" },
   { code: "ar", label: "AR", title: "العربية", gtCode: "ar" },
   { code: "ko", label: "KO", title: "한국어", gtCode: "ko" },
 ];

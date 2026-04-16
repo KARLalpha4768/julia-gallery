@@ -20,6 +20,7 @@ const CURRENCIES = [
   { code: "HUF", label: "Hungarian Forint (HU)" },
   { code: "BRL", label: "Brazilian Real (PT)" },
   { code: "AED", label: "UAE Dirham (AR)" },
+  { code: "ZAR", label: "South African Rand (AF)" },
   { code: "KRW", label: "South Korean Won (KO)" },
 ];
 
