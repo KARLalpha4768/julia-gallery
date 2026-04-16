@@ -26,6 +26,25 @@ export function SiteLanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    // Check for ?lang= URL parameter (enables shareable language links)
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = params.get("lang");
+    if (urlLang) {
+      const lang = LANGUAGES.find((l) => l.code === urlLang);
+      if (lang) {
+        const domain = window.location.hostname;
+        document.cookie = `googtrans=/en/${lang.gtCode}; path=/; domain=${domain}`;
+        document.cookie = `googtrans=/en/${lang.gtCode}; path=/`;
+        setCurrentLang(lang.code);
+        // Remove the param from URL to keep it clean, then reload
+        const url = new URL(window.location.href);
+        url.searchParams.delete("lang");
+        window.history.replaceState({}, "", url.toString());
+        window.location.reload();
+        return;
+      }
+    }
+
     // Read the current language from the Google Translate cookie
     const match = document.cookie.match(/googtrans=\/en\/([^;]+)/);
     if (match && match[1]) {
