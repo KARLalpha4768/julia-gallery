@@ -36,6 +36,7 @@ export function SiteLanguageSelector() {
         document.cookie = `googtrans=/en/${lang.gtCode}; path=/; domain=${domain}`;
         document.cookie = `googtrans=/en/${lang.gtCode}; path=/`;
         setCurrentLang(lang.code);
+        localStorage.setItem("julia-lang-set", "true");
         // Remove the param from URL to keep it clean, then reload
         const url = new URL(window.location.href);
         url.searchParams.delete("lang");
@@ -51,6 +52,23 @@ export function SiteLanguageSelector() {
       const gtCode = match[1];
       const lang = LANGUAGES.find((l) => l.gtCode === gtCode);
       if (lang) setCurrentLang(lang.code);
+      return; // User already has a language preference
+    }
+
+    // Auto-detect South African visitors (first visit only)
+    if (!localStorage.getItem("julia-lang-set")) {
+      fetch("https://ipapi.co/json/")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.country_code === "ZA") {
+            const domain = window.location.hostname;
+            document.cookie = `googtrans=/en/af; path=/; domain=${domain}`;
+            document.cookie = `googtrans=/en/af; path=/`;
+            localStorage.setItem("julia-lang-set", "true");
+            window.location.reload();
+          }
+        })
+        .catch(() => {}); // Fail silently — English is fine as default
     }
   }, []);
 

@@ -10,6 +10,7 @@ interface ShippingCalculatorProps {
 const REGIONS = [
   { id: "default", name: "Select region to estimate shipping", cost: null },
   { id: "mauritius", name: "Local (Mauritius)", cost: 100 },
+  { id: "southern_africa", name: "Southern Africa (SA, Namibia, Botswana)", cost: 450 },
   { id: "europe", name: "Europe / UK", cost: 500 },
   { id: "na", name: "North America", cost: 700 },
   { id: "asia_oceania", name: "Asia / Oceania", cost: 800 },

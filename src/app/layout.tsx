@@ -25,10 +25,10 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://erze-art.vercel.app"),
+  metadataBase: new URL("https://julia-gallery.vercel.app"),
   title: "Julia Art — Indo-Pacific Contemporary Art",
   description:
-    "Discover original contemporary artworks from the Indo-Pacific region. Museum-grade paintings, curated collections, and exclusive artist editions.",
+    "Discover original contemporary artworks from the Indo-Pacific region. Museum-grade paintings inspired by Mauritius, shipped worldwide including South Africa. Curated collections and exclusive artist editions.",
   applicationName: "Julia Art",
   keywords: [
     "contemporary art",
@@ -39,12 +39,20 @@ export const metadata: Metadata = {
     "abstract art",
     "modern art",
     "Julia Art",
+    "Mauritius art",
+    "South Africa art for sale",
+    "contemporary art Cape Town",
+    "original paintings Johannesburg",
+    "Indian Ocean art",
+    "African contemporary art",
+    "kunst te koop",
+    "hedendaagse kuns",
   ],
   openGraph: {
     title: "Julia Art — Indo-Pacific Contemporary Art",
     siteName: "Julia Art",
     description:
-      "Discover original contemporary artworks from the Indo-Pacific region.",
+      "Original contemporary paintings from Mauritius. Ships to South Africa, Europe, and worldwide.",
     type: "website",
   },
 };
