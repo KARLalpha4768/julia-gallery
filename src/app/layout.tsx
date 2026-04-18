@@ -7,6 +7,7 @@ import { CartProvider } from "@/lib/cart-context";
 import { FavoritesProvider } from "@/lib/favorites-context";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { ArtistChat } from "@/components/chat/ArtistChat";
+import { BackToTop } from "@/components/layout/BackToTop";
 import Script from "next/script";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
     title: "Julia Art — Indo-Pacific Contemporary Art",
     siteName: "Julia Art",
     description:
-      "Original contemporary paintings from Mauritius. Ships to South Africa, Europe, and worldwide.",
+      "Original contemporary paintings inspired by Mauritius and the Indo-Pacific region. Museum-grade works shipped worldwide including South Africa, Europe, and the Americas.",
     type: "website",
     images: [
       {
@@ -67,7 +68,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Julia Art — Indo-Pacific Contemporary Art",
     description:
-      "Original contemporary paintings from Mauritius. Ships to South Africa, Europe, and worldwide.",
+      "Original contemporary paintings inspired by Mauritius and the Indo-Pacific region. Museum-grade works shipped worldwide including South Africa, Europe, and the Americas.",
     images: ["/og-preview.png"],
   },
 };
@@ -126,6 +127,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <ArtistChat />
+          <BackToTop />
         </FavoritesProvider>
         </CartProvider>
       </body>

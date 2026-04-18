@@ -330,14 +330,16 @@
     bottom: 0;
     right: 0;
     width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
+    height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    top: auto;
   }
 
   .fab {
     bottom: 16px;
     right: 16px;
+    z-index: 99;
   }
 
   .fabLabel {
