@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/the_wave_returns_art.jpeg",
+        url: "/artwork/piece-7.jpeg",
         width: 1200,
         height: 630,
         alt: "Julia Art — Indo-Pacific Contemporary Art Gallery",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     title: "Julia Art — Indo-Pacific Contemporary Art",
     description:
       "Original contemporary paintings from Mauritius. Ships to South Africa, Europe, and worldwide.",
-    images: ["/the_wave_returns_art.jpeg"],
+    images: ["/artwork/piece-7.jpeg"],
   },
 };
 
