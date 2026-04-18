@@ -54,6 +54,21 @@ export const metadata: Metadata = {
     description:
       "Original contemporary paintings from Mauritius. Ships to South Africa, Europe, and worldwide.",
     type: "website",
+    images: [
+      {
+        url: "/the_wave_returns_art.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Julia Art — Indo-Pacific Contemporary Art Gallery",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Julia Art — Indo-Pacific Contemporary Art",
+    description:
+      "Original contemporary paintings from Mauritius. Ships to South Africa, Europe, and worldwide.",
+    images: ["/the_wave_returns_art.jpeg"],
   },
 };
 
