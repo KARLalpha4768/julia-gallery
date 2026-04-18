@@ -5,6 +5,7 @@ import { ConceptsSection } from "@/components/gallery/ConceptsSection";
 import { ArtistFilm } from "@/components/gallery/ArtistFilm";
 import { AboutSection } from "@/components/gallery/AboutSection";
 import { ExhibitionTimeline } from "@/components/gallery/ExhibitionTimeline";
+import { Testimonials } from "@/components/gallery/Testimonials";
 import { NovelReader } from "@/components/novel/NovelReader";
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
       <ArtistFilm />
       <AboutSection />
       <ExhibitionTimeline />
+      <Testimonials />
       <NovelReader />
     </>
   );

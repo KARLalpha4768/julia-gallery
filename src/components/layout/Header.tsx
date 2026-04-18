@@ -110,6 +110,9 @@ export function Header() {
           <a href="/contact" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>
             Inquire
           </a>
+          <div className={styles.mobileLang}>
+            <SiteLanguageSelector />
+          </div>
         </nav>
       </div>
     </header>

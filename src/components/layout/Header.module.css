@@ -228,7 +228,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .langWrapper {
-    display: none; /* Can be handled inside mobile menu alternatively, but header fits it if tight. Actually let's keep it visible, just shift it. */
+    display: none;
   }
 
   .nav {
@@ -243,3 +243,10 @@
     display: block;
   }
 }
+
+.mobileLang {
+  padding-top: var(--space-lg);
+  margin-top: var(--space-md);
+  border-top: 1px solid var(--color-border-subtle);
+}
+

@@ -12,7 +12,7 @@ import { RecordArtworkView } from "@/components/product/RecordArtworkView";
 import type { Metadata } from "next";
 import styles from "./page.module.css";
 
-const SITE_URL = "https://erze-art.vercel.app";
+const SITE_URL = "https://julia-gallery.vercel.app";
 
 type Params = Promise<{ slug: string }>;
 
