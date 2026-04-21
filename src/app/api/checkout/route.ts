@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     });
 
     emailBody += `--- FINANCIALS ---\n`;
-    emailBody += `Total Value: $${total.toLocaleString()}\n`;
+    emailBody += `Total Value: $${total.toLocaleString('en-US')}\n`;
     let erzeBody = `\n=========================================\n`;
     erzeBody += `🔔 NEW ORDER CONFIRMATION: JULIA ART GALLERY\n`;
     erzeBody += `=========================================\n\n`;
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     
     erzeBody += `\n--- FINANCIAL CLEARANCE ---\n`;
     const totalOrderValue = items.reduce((sum: number, item: any) => sum + item.artwork.price, 0) + 800; // Art + Shipping
-    erzeBody += `Total Value: $${totalOrderValue.toLocaleString()} USD\n`;
+    erzeBody += `Total Value: $${totalOrderValue.toLocaleString('en-US')} USD\n`;
     erzeBody += `Status: FUNDS CLEARED via Stripe\n`;
     erzeBody += `Deposit Destination: DBS Bank Singapore Account ending in **4922**\n`;
     erzeBody += `Expected Settlement: Within 24 hours\n`;

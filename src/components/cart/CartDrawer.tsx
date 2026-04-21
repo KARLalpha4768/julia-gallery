@@ -136,7 +136,7 @@ export function CartDrawer() {
             <div className={styles.subtotal}>
               <span>Subtotal</span>
               <span className={styles.subtotalPrice}>
-                ${total.toLocaleString()}
+                ${total.toLocaleString('en-US')}
               </span>
             </div>
             <p className={styles.shippingNote}>
