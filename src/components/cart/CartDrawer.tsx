@@ -8,31 +8,43 @@ import styles from "./CartDrawer.module.css";
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, total, itemCount, clearCart } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [note, setNote] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleCheckout = async () => {
-    setIsCheckingOut(true);
+  // No payment is taken here: the request goes to Julia, who replies by email.
+  const handleRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSending(true);
+    setError("");
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, total }),
+        body: JSON.stringify({
+          items: items.map((item) => ({ artwork: { id: item.artwork.id } })),
+          name,
+          email,
+          phone,
+          message: note,
+        }),
       });
       if (response.ok) {
-        setCheckoutSuccess(true);
         clearCart();
         closeCart();
         router.push('/order-confirmation');
-      } else {
-        alert("Checkout failed. Please try again.");
+        return;
       }
-    } catch (e) {
-      console.error(e);
-      alert("Checkout error.");
+      const data = await response.json().catch(() => null);
+      setError(data?.error ?? "Your request couldn't be sent. Please try again.");
+    } catch {
+      setError("Your request couldn't be sent. Please check your connection and try again.");
     } finally {
-      setIsCheckingOut(false);
+      setIsSending(false);
     }
   };
 
@@ -140,20 +152,65 @@ export function CartDrawer() {
               </span>
             </div>
             <p className={styles.shippingNote}>
-              AGS Fine Art white-glove logistics · Shipping calculated at checkout
+              No payment is taken here. Julia will email you to confirm
+              availability, payment and shipping.
             </p>
-            <button 
-              className={styles.checkoutBtn} 
-              id="checkout-button"
-              onClick={handleCheckout}
-              disabled={isCheckingOut || checkoutSuccess}
-            >
-              {checkoutSuccess 
-                ? "✓ Order Placed. AGS Notified." 
-                : isCheckingOut 
-                  ? "Processing..." 
-                  : "Proceed to Checkout"}
-            </button>
+            <form className={styles.requestForm} onSubmit={handleRequest} id="purchase-request-form">
+              <input
+                className={styles.requestInput}
+                type="text"
+                placeholder="Your name"
+                aria-label="Your name"
+                autoComplete="name"
+                maxLength={100}
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <input
+                className={styles.requestInput}
+                type="email"
+                placeholder="Email"
+                aria-label="Email"
+                autoComplete="email"
+                maxLength={254}
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                className={styles.requestInput}
+                type="tel"
+                placeholder="Phone (optional)"
+                aria-label="Phone (optional)"
+                autoComplete="tel"
+                maxLength={40}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              <textarea
+                className={styles.requestInput}
+                placeholder="Shipping country or a note (optional)"
+                aria-label="Shipping country or a note (optional)"
+                maxLength={2000}
+                rows={2}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+              />
+              {error && (
+                <p className={styles.requestError} role="alert">
+                  {error}
+                </p>
+              )}
+              <button
+                type="submit"
+                className={styles.checkoutBtn}
+                id="checkout-button"
+                disabled={isSending}
+              >
+                {isSending ? "Sending…" : "Request to Purchase"}
+              </button>
+            </form>
             <button className={styles.continueBtn} onClick={closeCart}>
               Continue Browsing
             </button>

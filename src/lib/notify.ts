@@ -1,35 +1,37 @@
 /**
- * SMS notification via Twilio — alerts Erze when a visitor starts a chat.
- * Fire-and-forget: never blocks the chat response.
+ * Text messages to the artist through Twilio.
+ *
+ * Configured with TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER
+ * and ARTIST_PHONE. Contact details live only in those environment
+ * variables, never in this repository.
  */
 
-let lastNotifiedAt = 0;
-const RATE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+const SITE_URL = "julia-gallery.vercel.app";
+const SMS_MAX_CHARS = 1500; // Twilio accepts up to 1600 characters per message
 
-export async function notifyArtist(visitorMessage: string): Promise<void> {
-  const now = Date.now();
-  if (now - lastNotifiedAt < RATE_LIMIT_MS) return;
-
+function twilioConfig() {
   const sid = process.env.TWILIO_ACCOUNT_SID;
   const token = process.env.TWILIO_AUTH_TOKEN;
   const from = process.env.TWILIO_FROM_NUMBER;
   const to = process.env.ARTIST_PHONE;
+  return sid && token && from && to ? { sid, token, from, to } : null;
+}
 
-  if (!sid || !token || !from || !to) {
-    console.warn("[notify] Twilio not configured — skipping SMS");
-    return;
+export function smsConfigured(): boolean {
+  return twilioConfig() !== null;
+}
+
+/** Sends a text to the artist. Resolves true only when Twilio accepted it. */
+export async function sendArtistSms(body: string): Promise<boolean> {
+  const config = twilioConfig();
+  if (!config) {
+    console.error("[notify] Twilio is not configured; message not sent");
+    return false;
   }
 
-  // Truncate long messages
-  const preview =
-    visitorMessage.length > 120
-      ? visitorMessage.slice(0, 120) + "..."
-      : visitorMessage;
-
-  const body = `Julia Gallery chat:\n"${preview}"\njulia-gallery.vercel.app`;
-
-  const url = `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`;
-  const auth = Buffer.from(`${sid}:${token}`).toString("base64");
+  const text = body.length > SMS_MAX_CHARS ? `${body.slice(0, SMS_MAX_CHARS - 1)}…` : body;
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${config.sid}/Messages.json`;
+  const auth = Buffer.from(`${config.sid}:${config.token}`).toString("base64");
 
   try {
     const res = await fetch(url, {
@@ -38,17 +40,34 @@ export async function notifyArtist(visitorMessage: string): Promise<void> {
         Authorization: `Basic ${auth}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({ To: to, From: from, Body: body }),
+      body: new URLSearchParams({ To: config.to, From: config.from, Body: text }),
     });
-
-    if (res.ok) {
-      lastNotifiedAt = now;
-      console.log("[notify] SMS sent to artist");
-    } else {
-      const err = await res.text();
-      console.error("[notify] Twilio error:", res.status, err);
-    }
+    if (res.ok) return true;
+    console.error("[notify] Twilio error:", res.status, (await res.text()).slice(0, 300));
+    return false;
   } catch (e) {
-    console.error("[notify] SMS failed:", e);
+    console.error("[notify] SMS failed:", e instanceof Error ? e.message : e);
+    return false;
+  }
+}
+
+let lastChatNoticeAt = 0;
+const CHAT_NOTICE_INTERVAL_MS = 5 * 60 * 1000;
+
+/**
+ * Tells the artist a visitor started a chat, at most once every five minutes.
+ * Fire-and-forget: never blocks the chat response.
+ */
+export async function notifyArtist(visitorMessage: string): Promise<void> {
+  const now = Date.now();
+  if (now - lastChatNoticeAt < CHAT_NOTICE_INTERVAL_MS) return;
+  if (!smsConfigured()) {
+    console.warn("[notify] Twilio not configured — skipping SMS");
+    return;
+  }
+
+  const preview = visitorMessage.length > 120 ? `${visitorMessage.slice(0, 120)}...` : visitorMessage;
+  if (await sendArtistSms(`Julia Gallery chat:\n"${preview}"\n${SITE_URL}`)) {
+    lastChatNoticeAt = now;
   }
 }

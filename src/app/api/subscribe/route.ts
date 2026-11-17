@@ -1,19 +1,31 @@
-import { NextResponse } from "next/server";
+import {
+  SEND_FAILED,
+  TEN_MINUTES,
+  allowRequest,
+  cleanText,
+  clientKey,
+  errorResponse,
+  isEmail,
+  readJsonObject,
+} from "@/lib/form-guard";
+import { sendArtistSms } from "@/lib/notify";
 
+/**
+ * Mailing-list sign-ups. There is no mailing-list service yet, so each
+ * sign-up is texted to the artist to add by hand.
+ */
 export async function POST(req: Request) {
-  try {
-    const { email } = await req.json();
-    if (!email) {
-      return NextResponse.json({ error: "Email required" }, { status: 400 });
-    }
+  const body = await readJsonObject(req);
+  const email = body ? cleanText(body.email, 254) : null;
+  if (!email || !isEmail(email)) return errorResponse("Please enter a valid email address.", 400);
 
-    // Mock — replace with Resend Audience API when credentials are ready:
-    // await resend.contacts.create({ email, audienceId: process.env.RESEND_AUDIENCE_ID });
-    console.log(`[MAILING LIST] New subscriber: ${email}`);
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Subscribe error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  if (!allowRequest(`subscribe:${clientKey(req)}`, 3, TEN_MINUTES)) {
+    return errorResponse("Too many sign-ups. Please try again in a few minutes.", 429);
   }
+
+  if (!(await sendArtistSms(`Mailing list sign-up — Julia Gallery\n${email}`))) {
+    return errorResponse(SEND_FAILED, 503);
+  }
+
+  return Response.json({ success: true });
 }
