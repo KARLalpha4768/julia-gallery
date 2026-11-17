@@ -1,5 +1,4 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
-import assert from 'node:assert/strict';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { POST as inquiry } from '@/app/api/inquiry/route';
 import { POST as subscribe } from '@/app/api/subscribe/route';
 import { POST as checkout } from '@/app/api/checkout/route';
@@ -56,65 +55,65 @@ const INQUIRY = { name: 'Ada Collector', email: 'ada@example.test', message: 'Is
 describe('inquiry', () => {
   it('texts the artist the collector details and message', async () => {
     const res = await inquiry(post('/api/inquiry', { ...INQUIRY, phone: '+1 555 0100' }));
-    assert.equal(res.status, 200);
-    assert.equal(sent.length, 1);
-    assert.equal(sent[0].to, TWILIO_ENV.ARTIST_PHONE);
-    assert.match(sent[0].body, /New inquiry/);
-    assert.match(sent[0].body, /Artwork: Point d'Azur/);
-    assert.match(sent[0].body, /Ada Collector <ada@example\.test>, \+1 555 0100/);
-    assert.match(sent[0].body, /Is this still available\?/);
+    expect(res.status).toBe(200);
+    expect(sent.length).toBe(1);
+    expect(sent[0].to).toBe(TWILIO_ENV.ARTIST_PHONE);
+    expect(sent[0].body).toMatch(/New inquiry/);
+    expect(sent[0].body).toMatch(/Artwork: Point d'Azur/);
+    expect(sent[0].body).toMatch(/Ada Collector <ada@example\.test>, \+1 555 0100/);
+    expect(sent[0].body).toMatch(/Is this still available\?/);
   });
 
   it('carries the offer subject from Make an Offer', async () => {
     const res = await inquiry(post('/api/inquiry', {
       name: 'Ada', email: 'ada@example.test', subject: 'Offer for "Point d\'Azur"', message: 'OFFER: $2000',
     }));
-    assert.equal(res.status, 200);
-    assert.match(sent[0].body, /Offer for "Point d'Azur"/);
-    assert.match(sent[0].body, /OFFER: \$2000/);
+    expect(res.status).toBe(200);
+    expect(sent[0].body).toMatch(/Offer for "Point d'Azur"/);
+    expect(sent[0].body).toMatch(/OFFER: \$2000/);
   });
 
   it('rejects missing fields and bad email without sending anything', async () => {
     for (const body of [{}, { ...INQUIRY, name: '' }, { ...INQUIRY, message: '  ' }, { ...INQUIRY, email: 'nope' }, { ...INQUIRY, name: 42 }]) {
       const res = await inquiry(post('/api/inquiry', body));
-      assert.equal(res.status, 400);
+      expect(res.status).toBe(400);
     }
-    assert.equal(sent.length, 0);
+    expect(sent.length).toBe(0);
   });
 
   it('reports failure instead of success when texts cannot be sent', async () => {
     clearTwilio();
     const unconfigured = await inquiry(post('/api/inquiry', INQUIRY));
-    assert.equal(unconfigured.status, 503);
-    assert.equal(sent.length, 0);
+    expect(unconfigured.status).toBe(503);
+    expect(sent.length).toBe(0);
 
     configureTwilio();
     twilioStatus = 500;
     const failed = await inquiry(post('/api/inquiry', INQUIRY));
-    assert.equal(failed.status, 503);
-    assert.match((await failed.json()).error, /couldn't be sent/);
+    expect(failed.status).toBe(503);
+    expect((await failed.json()).error).toMatch(/couldn't be sent/);
   });
 
   it('limits each visitor to five messages per ten minutes', async () => {
-    for (let i = 0; i < 5; i++) assert.equal((await inquiry(post('/api/inquiry', INQUIRY))).status, 200);
-    assert.equal((await inquiry(post('/api/inquiry', INQUIRY))).status, 429);
-    assert.equal((await inquiry(post('/api/inquiry', INQUIRY, '198.51.100.7'))).status, 200);
-    assert.equal(sent.length, 6);
+    for (let i = 0; i < 5; i++) expect((await inquiry(post('/api/inquiry', INQUIRY))).status).toBe(200);
+    expect((await inquiry(post('/api/inquiry', INQUIRY))).status).toBe(429);
+    expect((await inquiry(post('/api/inquiry', INQUIRY, '198.51.100.7'))).status).toBe(200);
+    expect(sent.length).toBe(6);
   });
 });
 
 describe('subscribe', () => {
   it('texts the sign-up to the artist', async () => {
     const res = await subscribe(post('/api/subscribe', { email: 'fan@example.test' }));
-    assert.equal(res.status, 200);
-    assert.match(sent[0].body, /Mailing list sign-up[\s\S]*fan@example\.test/);
+    expect(res.status).toBe(200);
+    expect(sent[0].body).toMatch(/Mailing list sign-up[\s\S]*fan@example\.test/);
   });
 
   it('rejects an invalid email and reports a failed send', async () => {
-    assert.equal((await subscribe(post('/api/subscribe', { email: 'x' }))).status, 400);
+    expect((await subscribe(post('/api/subscribe', { email: 'x' }))).status).toBe(400);
     clearTwilio();
-    assert.equal((await subscribe(post('/api/subscribe', { email: 'fan@example.test' }))).status, 503);
-    assert.equal(sent.length, 0);
+    expect((await subscribe(post('/api/subscribe', { email: 'fan@example.test' }))).status).toBe(503);
+    expect(sent.length).toBe(0);
   });
 });
 
@@ -127,52 +126,52 @@ describe('purchase request', () => {
       items: [{ artwork: { id: 1, title: 'Fake title', price: 1, priceFormatted: '$1' } }],
       total: 1,
     }));
-    assert.equal(res.status, 200);
-    assert.equal(sent.length, 1);
-    assert.match(sent[0].body, /Purchase request/);
-    assert.match(sent[0].body, /- Point d'Azur \(\$2,400\)/);
-    assert.match(sent[0].body, /Listed total: \$2,400/);
-    assert.match(sent[0].body, /Ben Buyer <ben@example\.test>/);
-    assert.match(sent[0].body, /Shipping to Lisbon/);
-    assert.match(sent[0].body, /No payment has been taken/);
-    assert.doesNotMatch(sent[0].body, /Fake title|\$1\b/);
+    expect(res.status).toBe(200);
+    expect(sent.length).toBe(1);
+    expect(sent[0].body).toMatch(/Purchase request/);
+    expect(sent[0].body).toMatch(/- Point d'Azur \(\$2,400\)/);
+    expect(sent[0].body).toMatch(/Listed total: \$2,400/);
+    expect(sent[0].body).toMatch(/Ben Buyer <ben@example\.test>/);
+    expect(sent[0].body).toMatch(/Shipping to Lisbon/);
+    expect(sent[0].body).toMatch(/No payment has been taken/);
+    expect(sent[0].body).not.toMatch(/Fake title|\$1\b/);
   });
 
   it('refuses unknown or sold works', async () => {
     const unknown = await checkout(post('/api/checkout', { ...BUYER, items: [{ artwork: { id: 999999 } }] }));
-    assert.equal(unknown.status, 400);
+    expect(unknown.status).toBe(400);
     const sold = await checkout(post('/api/checkout', { ...BUYER, items: [{ artwork: { id: 2 } }] }));
-    assert.equal(sold.status, 409);
-    assert.match((await sold.json()).error, /Garden at La Perdrix/);
-    assert.equal(sent.length, 0);
+    expect(sold.status).toBe(409);
+    expect((await sold.json()).error).toMatch(/Garden at La Perdrix/);
+    expect(sent.length).toBe(0);
   });
 
   it('requires the buyer name and a valid email', async () => {
     const items = [{ artwork: { id: 1 } }];
-    assert.equal((await checkout(post('/api/checkout', { items }))).status, 400);
-    assert.equal((await checkout(post('/api/checkout', { ...BUYER, email: 'bad', items }))).status, 400);
-    assert.equal((await checkout(post('/api/checkout', { ...BUYER, items: [] }))).status, 400);
-    assert.equal(sent.length, 0);
+    expect((await checkout(post('/api/checkout', { items }))).status).toBe(400);
+    expect((await checkout(post('/api/checkout', { ...BUYER, email: 'bad', items }))).status).toBe(400);
+    expect((await checkout(post('/api/checkout', { ...BUYER, items: [] }))).status).toBe(400);
+    expect(sent.length).toBe(0);
   });
 
   it('never reports success when the artist was not told', async () => {
     twilioStatus = 503;
     const res = await checkout(post('/api/checkout', { ...BUYER, items: [{ artwork: { id: 1 } }] }));
-    assert.equal(res.status, 503);
+    expect(res.status).toBe(503);
   });
 });
 
 describe('helpers', () => {
   it('cleanText trims, strips control characters and enforces limits', () => {
-    assert.equal(cleanText('  hi\u0000 there\u0007 ', 20), 'hi there');
-    assert.equal(cleanText(undefined, 5), '');
-    assert.equal(cleanText(12, 5), null);
-    assert.equal(cleanText('toolong', 3), null);
+    expect(cleanText('  hi\u0000 there\u0007 ', 20)).toBe('hi there');
+    expect(cleanText(undefined, 5)).toBe('');
+    expect(cleanText(12, 5)).toBe(null);
+    expect(cleanText('toolong', 3)).toBe(null);
   });
 
   it('keeps texts within Twilio limits', async () => {
-    assert.equal(await sendArtistSms('x'.repeat(5000)), true);
-    assert.equal(sent[0].body.length, 1500);
-    assert.ok(sent[0].body.endsWith('…'));
+    expect(await sendArtistSms('x'.repeat(5000))).toBe(true);
+    expect(sent[0].body.length).toBe(1500);
+    expect(sent[0].body.endsWith('…')).toBe(true);
   });
 });
