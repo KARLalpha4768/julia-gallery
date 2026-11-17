@@ -3,8 +3,8 @@ import Link from "next/link";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Order Confirmed — Julia Art",
-  description: "Your order has been confirmed. Thank you for collecting original art by Julia.",
+  title: "Purchase Request Received — Julia Art",
+  description: "Your purchase request has been sent to Julia. She will email you to arrange payment and shipping.",
 };
 
 export default function OrderConfirmationPage() {
@@ -17,23 +17,23 @@ export default function OrderConfirmationPage() {
         </svg>
       </div>
 
-      <h1 className={styles.title}>Thank You for Your Acquisition</h1>
+      <h1 className={styles.title}>Thank You for Your Request</h1>
       <p className={styles.subtitle}>
-        Your order has been confirmed and payment cleared. A full summary has been sent to your email.
+        Your purchase request has been sent to Julia. No payment has been taken.
       </p>
 
       <div className={styles.card}>
         <div className={styles.cardRow}>
+          <span className={styles.cardLabel}>Next step</span>
+          <span className={styles.cardValue}>Julia will email you within 24 hours to confirm availability</span>
+        </div>
+        <div className={styles.cardRow}>
+          <span className={styles.cardLabel}>Payment</span>
+          <span className={styles.cardValue}>Agreed directly with Julia before anything is shipped</span>
+        </div>
+        <div className={styles.cardRow}>
           <span className={styles.cardLabel}>Shipping</span>
-          <span className={styles.cardValue}>AGS Fine Art will contact you to arrange delivery</span>
-        </div>
-        <div className={styles.cardRow}>
-          <span className={styles.cardLabel}>Timeline</span>
-          <span className={styles.cardValue}>Custom crating & export clearance initiated</span>
-        </div>
-        <div className={styles.cardRow}>
-          <span className={styles.cardLabel}>Certificate</span>
-          <span className={styles.cardValue}>Certificate of Authenticity included with shipment</span>
+          <span className={styles.cardValue}>Crating and delivery are arranged once payment is agreed</span>
         </div>
         <div className={styles.cardRow}>
           <span className={styles.cardLabel}>Questions?</span>
@@ -42,10 +42,6 @@ export default function OrderConfirmationPage() {
           </span>
         </div>
       </div>
-
-      <p className={styles.note}>
-        AGS Movers Mauritius has been dispatched and will reach out to the artist directly to arrange professional crating and door-to-door airfreight to your address.
-      </p>
 
       <Link href="/" className={styles.returnBtn}>
         Return to Gallery

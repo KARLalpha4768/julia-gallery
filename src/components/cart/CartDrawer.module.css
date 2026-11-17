@@ -241,6 +241,36 @@
   margin-bottom: var(--space-md);
 }
 
+.requestForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.requestInput {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  background: var(--color-bg-elevated);
+  resize: vertical;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.requestInput:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-subtle);
+}
+
+.requestError {
+  font-size: 0.8125rem;
+  color: #b42318;
+}
+
 .checkoutBtn {
   width: 100%;
   padding: 16px;

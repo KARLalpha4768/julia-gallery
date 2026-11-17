@@ -1,90 +1,75 @@
-import { NextResponse } from "next/server";
+import { artworks, type Artwork } from "@/lib/data";
+import {
+  SEND_FAILED,
+  TEN_MINUTES,
+  allowRequest,
+  cleanText,
+  clientKey,
+  errorResponse,
+  isEmail,
+  readJsonObject,
+} from "@/lib/form-guard";
+import { sendArtistSms } from "@/lib/notify";
 
+const MAX_ITEMS = 20;
+
+/**
+ * Purchase requests from the cart.
+ *
+ * No payment is taken here. The request is texted to the artist, who
+ * contacts the buyer by email to confirm availability, payment and shipping.
+ * Titles and prices come from the catalog, not from the browser.
+ */
 export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const { items, total } = body;
+  const body = await readJsonObject(req);
+  if (!body) return errorResponse("Invalid request.", 400);
 
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
+  const lines = Array.isArray(body.items) ? body.items : [];
+  if (lines.length === 0) return errorResponse("Your collection is empty.", 400);
+  if (lines.length > MAX_ITEMS) return errorResponse("Too many works in one request.", 400);
+
+  const ids = [
+    ...new Set(
+      lines.map((line: unknown) => (line as { artwork?: { id?: unknown } } | null)?.artwork?.id),
+    ),
+  ];
+  const selected: Artwork[] = [];
+  for (const id of ids) {
+    const artwork = typeof id === "number" ? artworks.find((a) => a.id === id) : undefined;
+    if (!artwork) {
+      return errorResponse("One of these works could not be found. Please refresh the page and try again.", 400);
     }
-
-    // Since this is a test/mock checkout, we immediately "succeed" the payment.
-    // Generates the AGS Movers Notification Payload
-    let emailBody = `\n=========================================\n`;
-    emailBody += `🔔 AUTOMATED LOGISTICS DISPATCH: AGS MOVERS MAURITIUS\n`;
-    emailBody += `=========================================\n\n`;
-    emailBody += `Dear AGS Movers Mauritius Team,\n\n`;
-    emailBody += `A purchase has been successfully cleared on the Julia Art Gallery platform.\n`;
-    emailBody += `Please contact the artist (Julia) immediately via text or phone at +49 178 4944787 to arrange a studio pickup for crating and export.\n\n`;
-    emailBody += `--- ARTWORK DETAILS ---\n`;
-    
-    items.forEach((item: any) => {
-      emailBody += `* Title: "${item.artwork.title}" (${item.artwork.series})\n`;
-      emailBody += `* Medium: ${item.artwork.medium}\n`;
-      emailBody += `* Dimensions: ${item.artwork.dimensions}\n`;
-      emailBody += `* Price: ${item.artwork.priceFormatted}\n\n`;
-    });
-
-    emailBody += `--- FINANCIALS ---\n`;
-    emailBody += `Total Value: $${total.toLocaleString('en-US')}\n`;
-    let erzeBody = `\n=========================================\n`;
-    erzeBody += `🔔 NEW ORDER CONFIRMATION: JULIA ART GALLERY\n`;
-    erzeBody += `=========================================\n\n`;
-    erzeBody += `Dear Julia,\n\n`;
-    erzeBody += `Congratulations, a new piece has just been purchased!\n`;
-    erzeBody += `AGS Movers has been notified via the automated dispatch system.\n`;
-    erzeBody += `They have been instructed to TEXT or CALL you at +49 178 4944787 shortly to arrange crating and pickup.\n\n`;
-    erzeBody += `--- BUYER INFORMATION ---\n`;
-    erzeBody += `Name: Victoria Chen\n`;
-    erzeBody += `Phone: +852 9123 4567\n`;
-    erzeBody += `Address: 15B, The Peak Tower, 128 Peak Road, Hong Kong Island, Hong Kong\n\n`;
-
-    erzeBody += `--- LOGISTICS & SHIPPING ---\n`;
-    erzeBody += `Provider: AGS Movers Fine Art\n`;
-    erzeBody += `Service Tier: White-Glove (Custom Crating, Export Clearance, Door-to-Door Airfreight)\n`;
-    erzeBody += `Shipping Paid: $800 USD (Asia / Oceania Region)\n`;
-    erzeBody += `Reference: https://www.agsmovers.com/additional-services/fine-art/\n\n`;
-
-    erzeBody += `--- ORDER DETAILS ---\n`;
-    items.forEach((item: any) => {
-      erzeBody += `* Title: "${item.artwork.title}"\n`;
-      if (item.artwork.slug) {
-        erzeBody += `* Link: https://julia-gallery.vercel.app/artwork/${item.artwork.slug}\n`;
-      }
-      erzeBody += `* Value: ${item.artwork.priceFormatted}\n`;
-      erzeBody += `* Medium: ${item.artwork.medium} | Dimensions: ${item.artwork.dimensions}\n`;
-    });
-    
-    erzeBody += `\n--- BUYER TELEMETRY & ACTIVITY ---\n`;
-    erzeBody += `Session Duration: 14 minutes\n`;
-    erzeBody += `Artworks Viewed: "Monsoon Garden", "Chamarel Strata", "Bazaar Indigo"\n`;
-    erzeBody += `AI Artist Interaction: YES\n`;
-    erzeBody += `Chat Summary: The buyer interacted with your AI persona for 6 minutes, asking specifically about your geographical inspiration behind 'Chamarel Strata'. The AI responded beautifully in your voice, which directly contributed to this purchase.\n`;
-    
-    erzeBody += `\n--- FINANCIAL CLEARANCE ---\n`;
-    const totalOrderValue = items.reduce((sum: number, item: any) => sum + item.artwork.price, 0) + 800; // Art + Shipping
-    erzeBody += `Total Value: $${totalOrderValue.toLocaleString('en-US')} USD\n`;
-    erzeBody += `Status: FUNDS CLEARED via Stripe\n`;
-    erzeBody += `Deposit Destination: DBS Bank Singapore Account ending in **4922**\n`;
-    erzeBody += `Expected Settlement: Within 24 hours\n`;
-
-    erzeBody += `\n=========================================\n`;
-
-    // Mock sending emails by logging to secure server terminal
-    console.log("[SENDING SECURE EMAIL TO: logistics@agsmovers.mu]");
-    console.log(emailBody);
-
-    console.log("[SENDING SECURE EMAIL TO: erz1357@gmail.com]");
-    console.log(erzeBody);
-
-    return NextResponse.json({ 
-      success: true, 
-      message: "Order placed successfully. AGS Movers has been notified for pickup." 
-    });
-
-  } catch (error) {
-    console.error("Checkout Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    if (!artwork.available) {
+      return errorResponse(`"${artwork.title}" is no longer available. Please remove it from your collection.`, 409);
+    }
+    selected.push(artwork);
   }
+
+  const name = cleanText(body.name, 100);
+  const email = cleanText(body.email, 254);
+  const phone = cleanText(body.phone, 40);
+  const message = cleanText(body.message, 2000);
+  if (!name || !email || phone === null || message === null) {
+    return errorResponse("Please enter your name and email.", 400);
+  }
+  if (!isEmail(email)) return errorResponse("Please enter a valid email address.", 400);
+
+  if (!allowRequest(`purchase:${clientKey(req)}`, 5, TEN_MINUTES)) {
+    return errorResponse("Too many requests. Please try again in a few minutes.", 429);
+  }
+
+  const total = selected.reduce((sum, a) => sum + a.price, 0);
+  const text = [
+    "Purchase request — Julia Gallery",
+    ...selected.map((a) => `- ${a.title} (${a.priceFormatted})`),
+    `Listed total: $${total.toLocaleString("en-US")}, shipping not included`,
+    `From: ${name} <${email}>${phone ? `, ${phone}` : ""}`,
+    ...(message ? ["", message] : []),
+    "",
+    "No payment has been taken. Reply by email to arrange payment and shipping.",
+  ].join("\n");
+
+  if (!(await sendArtistSms(text))) return errorResponse(SEND_FAILED, 503);
+
+  return Response.json({ success: true, message: "Purchase request sent." });
 }

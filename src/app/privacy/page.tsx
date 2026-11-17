@@ -43,11 +43,16 @@ export default function PrivacyPage() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Payment Security</h2>
+        <h2 className={styles.sectionTitle}>Payments and Messages</h2>
         <p>
-          All transactions are processed through <strong>Stripe</strong>, a
-          PCI-DSS Level 1 certified payment processor. We never store your
-          credit card information on our servers.
+          This website does not take payments or collect card details. When you
+          request a purchase, Julia contacts you by email to agree payment and
+          shipping directly.
+        </p>
+        <p>
+          Purchase requests, inquiries, offers and mailing-list sign-ups are
+          forwarded to Julia by text message through Twilio. Conversations with
+          the website chat are processed by OpenAI to generate replies.
         </p>
       </section>
 
@@ -68,7 +73,7 @@ export default function PrivacyPage() {
         <p>
           This policy may be updated periodically. The latest version will
           always be available on this page. Last updated:{" "}
-          <strong>April 2026</strong>.
+          <strong>November 2026</strong>.
         </p>
       </section>
     </div>
